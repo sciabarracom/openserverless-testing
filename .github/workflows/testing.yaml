@@ -1,0 +1,21 @@
+name: kubectl-demo
+on: push
+
+jobs:
+  kubectl-demo:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Load secret
+        uses: 1password/load-secrets-action@v2
+        with:
+          # Export loaded secrets as environment variables
+          export-env: true
+        env:
+          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+          AKS_KUBE_CONFIG: op://OpenServerless/aks_kubeconfig/text
+
+      - name: Get nodes
+        uses: steebchen/kubectl@v2.0.0
+        with: # defaults to latest kubectl binary version
+          config: "${{ env.AKS_KUBE_CONFIG }}"
+          command: get nodes
