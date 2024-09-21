@@ -1,5 +1,9 @@
-name: kubectl-test
+name: nuvolaris-testing
 on: push
+
+env:
+  NGROK_TOKEN: ${{ secrets.NGROK_TOKEN }}
+  NGROK_PASSWORD: ${{ secrets.NGROK_PASSWORD }}
 
 jobs:
   kubectl-demo:
