@@ -1,4 +1,4 @@
-name: kubectl-demo
+name: kubectl-test
 on: push
 
 jobs:
