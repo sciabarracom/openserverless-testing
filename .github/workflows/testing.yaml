@@ -5,6 +5,8 @@ jobs:
   kubectl-demo:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v3
       - name: Load secret
         uses: 1password/load-secrets-action@v2
         with:
@@ -13,9 +15,12 @@ jobs:
         env:
           OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
           AKS_KUBE_CONFIG: op://OpenServerless/aks_kubeconfig/text
-
       - name: Get nodes
         uses: steebchen/kubectl@v2.0.0
         with: # defaults to latest kubectl binary version
           config: "${{ env.AKS_KUBE_CONFIG }}"
           command: get nodes
+      - name: Debug Action (if requested)
+        run:  .github/debugAction.sh
+      - name: Wait for Debug (if requested)
+        run: .github/waitIfDebug.sh
