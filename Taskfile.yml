@@ -1,0 +1,282 @@
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+
+version: "3"  
+  
+env:
+  OLARIS:
+    sh: echo $(cd olaris;git rev-parse --short HEAD) 
+
+vars:
+  CLOUD: gcp
+
+dotenv:
+  - .env
+  - .secrets
+
+includes:
+  aws: ./TaskfileAWS.yml
+  gcp: ./TaskfileGCloud.yml
+  azure: ./TaskfileAzure.yml
+
+tasks:
+  default: task --list-all
+  setup: { silent: true }
+
+  status:
+    - nuv config use
+    - nuv debug info
+
+  kind:create:
+    - which docker
+    - nuv setup docker create
+
+  kind:delete:
+    - nuv setup docker delete
+
+  k3s:create:
+    cmds:
+    - task: "{{.CLOUD}}:vm:create"
+      vars:
+          NAME: k3s-test
+          TYPE: k3s
+          VM_TYPE: n2-standard-4
+          REGION: us-east1-d
+          IMAGE: ubuntu-minimal-2204-lts
+    - task: aws:vm:config
+    - nuv cloud gcloud vm-getip k3s-test >_ip
+    - nuv cloud aws zone-update k3s.nuvtest.net --wildcard --ip=$(cat _ip)
+
+  k3s:arm:create:
+    cmds:
+    - task: "{{.CLOUD}}:vm:create"
+      vars:
+          NAME: k3s-arm-test
+          TYPE: k3s
+          VM_TYPE: t2a-standard-4
+          REGION: europe-west4-a
+          IMAGE: ubuntu-minimal-2204-lts-arm64
+    - task: aws:vm:config
+    - nuv cloud gcloud vm-getip k3s-arm-test >_ip
+    - nuv cloud aws zone-update arm.nuvtest.net --wildcard --ip=$(cat _ip)   
+
+  mk8s:create:
+    cmds:
+    - task: "{{.CLOUD}}:vm:create"
+      vars:
+          NAME: mk8s-test
+          TYPE: mk8s
+    - task: aws:vm:config
+    - task: gcp:vm:config
+    - nuv cloud gcloud vm-getip mk8s-test >_ip
+    - nuv cloud aws zone-update mk8s.nuvtest.net --wildcard --ip=$(cat _ip)
+
+  k3s:delete:
+    cmds:
+    - task: "{{.CLOUD}}:vm:delete"
+      vars:
+          NAME: k3s-test
+          TYPE: k3s
+          VM_TYPE: n2-standard-4
+          REGION: us-east1-d
+          IMAGE: ubuntu-minimal-2204-lts
+
+  k3s:arm:delete:
+    cmds:
+    - task: "{{.CLOUD}}:vm:delete"
+      vars:
+          NAME: k3s-arm-test
+          TYPE: k3s
+          VM_TYPE: t2a-standard-4
+          REGION: europe-west4-a
+          IMAGE: ubuntu-minimal-2204-lts-arm64   
+
+  mk8s:delete:
+    cmds:
+    - task: "{{.CLOUD}}:vm:delete"
+      vars:
+          NAME: mk8s-test
+          TYPE: mk8s
+
+  osh:create:
+    cmds:
+    - mkdir -p conf/{{.CLOUD}}
+    - cp conf/{{.CLOUD}}-install-config.yaml conf/{{.CLOUD}}/install-config.yaml
+    - openshift-install create cluster --dir conf/{{.CLOUD}}
+    - nuv cloud osh import conf/{{.CLOUD}}/auth/kubeconfig
+    - nuv cloud osh setup
+    - nuv config use openshift --rename=openshift-nuvolaris-testing
+
+  osh:delete:
+    - openshift-install destroy cluster --dir conf/{{.CLOUD}}
+
+  eks:create:
+    cmds:
+    - task aws:cluster:create
+    - nuv cloud eks lb >_cname
+    - nuv cloud aws zone-update eks.nuvtest.net --wildcard --cname=$(cat _cname)
+
+  eks:delete:
+    cmds:
+    - task aws:cluster:delete
+
+  aks:create:
+    cmds:
+    - task azure:cluster:create
+    - nuv cloud aks lb >_ip
+    - nuv cloud aws zone-update aks.nuvtest.net --wildcard --ip $(cat _ip)
+  
+  aks:delete:
+    cmds:
+    - task azure:cluster:delete
+
+  progress:
+    #desc: update the progress
+    cmds:
+      - |
+        if test -z "{{.N}}"
+        then echo use task progress N=value
+        else 
+        X=$(((100*{{.N}})/103))
+        echo $X
+        curl -L "https://geps.dev/progress/$X?dangerColor=006600&warningColor=006600&successColor=006600" >img/progress.svg
+        fi
+
+  upload-secrets:
+    cmds:
+      - |
+        if ! test -e .secrets
+        then echo "please setup .env and generate secrets with task secrets before"
+            exit 1
+        fi
+      - |
+        for i in $(awk -F= '{print $1}' <.secrets)
+        do echo "uploading $i"
+           gh -R nuvolaris/nuvolaris-testing secret set "$i" -b "${!i}"
+        done
+
+  # upload secrets to access to vm
+  # prereq: ssh key in ~/.ssh/id_rsa
+  # two vm created with k3s:create and mk8s:create
+  secrets-vm: |
+    K3S_IP=$(nuv cloud gcloud vm-getip k3s-test)
+    echo K3S_IP=$K3S_IP >>.secrets
+    MK8S_IP=$(nuv cloud gcloud vm-getip mk8s-test)
+    echo MK8S_IP=$MK8S_IP >>.secrets
+  
+  # upload secrets to access to kubernetes clusters
+  # prereq: eks:create aks:create gke:create openshift:create
+  # kubernetes configs stored in ~/.nuv
+  secrets-kube: |
+    for i in aks eks gke openshift
+    do
+       f="$i-nuvolaris-testing"
+       nuv config use $f
+       nuv debug kubeconfig
+       VAR="$(echo $i | tr 'a-z-' 'A-Z_')_KUBECONFIG_B64"
+       DATA="$(cat ~/.kube/config | base64 -w0)"
+       echo "Secret $VAR:"
+       echo "$VAR=\"$DATA\"" >>.secrets
+    done
+
+  # here you need
+  # ssh key in ~/.ssh/id_rsa
+  # gloud service account in ~/.ssh/gcloud.json
+  secrets-id: 
+    - |
+      ID_RSA_B64="$(cat ~/.ssh/id_rsa | base64 -w0)"
+      echo ID_RSA_B64=$ID_RSA_B64 >>.secrets
+    - |
+      echo AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID >>.secrets
+      echo AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY >>.secrets
+    - |
+      GCLOUD_SERVICE_ACCOUNT_B64="$(cat ~/.ssh/gcloud.json | base64 -w0)"
+      echo GCLOUD_SERVICE_ACCOUNT_B64=\"$GCLOUD_SERVICE_ACCOUNT_B64\" >>.secrets
+
+  secrets:
+      cmds:
+      - echo SKIP_SSL=true >.secrets
+      - task: gcp:vm:config
+      - task: secrets-id
+      - task: secrets-vm
+      - task: secrets-kube
+
+  test-ci: |
+    git tag -d $(git tag)
+    git tag {{.N}}-{{.TAG}}
+    git push origin --tags
+
+  d: task test-ci N=kind TAG=$OLARIS
+  k: task test-ci N=k3s TAG=$OLARIS
+  m: task test-ci N=mk8s TAG=$OLARIS
+  e: task test-ci N=eks TAG=$OLARIS
+  a: task test-ci N=aks TAG=$OLARIS
+  g: task test-ci N=gke TAG=$OLARIS
+  o: task test-ci N=osh TAG=$OLARIS
+
+  all:
+   ignore_error: true
+   cmds:
+    - |
+      cd olaris
+      gh pr create --title="Tentative merge for $OLARIS" --body "Merge this if all [*-$OLARIS](https://github.com/nuvolaris/nuvolaris-testing/actions) tests succeed."    
+    - task d k m e a g
+
+
+
+  tag-test-ci: |
+    git tag {{.TAG}}
+    git push origin --tags  
+
+  config:
+    cmds:
+    - task aws:vm:config
+    - task aws:cluster:config
+    - task gcp:vm:config
+    - task gcp:cluster:config
+    - task azure:cluster:config  
+
+  login:
+    - az login --use-device-code
+    - gcloud auth login 
+    - gcloud config set project nuvolaris-testing
+
+  vmconfig:
+    silent: true
+    cmds:
+    - echo $ID_RSA_B64 | base64 -d >conf/id_rsa
+    - chmod 0600 conf/id_rsa
+    - |
+      eval $(ssh-agent -s) 
+      ssh-add conf/id_rsa
+      nuv cloud k3s kubeconfig SERVER=api.k3s.nuvtest.net USERNAME=ubuntu
+      nuv cloud mk8s kubeconfig SERVER=api.mk8s.nuvtest.net USERNAME=ubuntu
+
+  kubeconfig:
+    - task: config
+    - task: login
+    - task: vmconfig
+    - echo "eks kubeconfig"
+    - nuv cloud eks kubeconfig
+    - echo "gke kubeconfig"
+    - nuv cloud gke kubeconfig
+    - echo "openshift kubeconfig"
+    - KUBECONFIG=conf/osh.kubeconfig oc login https://api.nuvolaris-testing.oshgcp.nuvtest.net:6443 --insecure-skip-tls-verify=true  -u kubeadmin -p $OSH_KUBEADMIN_PASSWORD
+    - nuv cloud osh import conf/osh.kubeconfig 
+    - nuv cloud aks kubeconfig
+    - nuv config use
+

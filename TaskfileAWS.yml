@@ -1,0 +1,57 @@
+version: '3'
+
+tasks:
+
+  
+  vm:list:
+  - az vm list
+
+  vm:config:
+    - >
+      nuv config aws 
+      --access="$AWS_ACCESS_KEY_ID" 
+      --secret="$AWS_SECRET_ACCESS_KEY" 
+      --region=us-east-2
+      --image=ami-024e6efaf93d85776
+      --vm=t3a.large
+      --vmuser=ubuntu
+      --disk=100 
+      --key="$AWS_DEFAULT_KEY_NAME"
+
+  vm:create:
+    cmds:
+    - task: vm:config
+    - nuv cloud aws vm-create {{.NAME}}
+    - nuv cloud aws vm-getip {{.NAME}} >_ip
+    - nuv cloud {{.TYPE}} create SERVER=$(cat _ip) USERNAME=ubuntu
+    requires: 
+      vars: [NAME, TYPE]
+
+  vm:delete:
+    cmds:
+    - task: vm:config
+    - nuv cloud aws vm-delete {{.NAME}}
+    requires: 
+      vars: [NAME]
+
+  cluster:config:
+    - >
+      nuv config eks
+      --access="$AWS_ACCESS_KEY_ID" 
+      --secret="$AWS_SECRET_ACCESS_KEY" 
+      --name=$AWS_CLUSTER_NAME
+      --region=us-east-2
+      --count=3
+      --vm=m5.xlarge 
+      --disk=50
+      --key="$AWS_DEFAULT_KEY_NAME"
+      --kubever=1.25
+
+  cluster:create:
+    - task: cluster:config
+    - nuv cloud eks create
+
+  cluster:delete:
+    - task: cluster:config
+    - nuv cloud eks delete
+
