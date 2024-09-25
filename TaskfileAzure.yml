@@ -7,19 +7,56 @@ tasks:
 
   cluster:config:
     - >
-      nuv config aks
+      ops config aks
+      --project=$AKS_PROJECT
       --name=$AKS_CLUSTER_NAME
       --count=4
-      --region=uksouth
+      --region=eastus
       --vm=Standard_D3
       --disk=100
       --key=~/.ssh/id_rsa.pub
 
   cluster:create:
     - task: cluster:config
-    - nuv cloud aks create
+    - ops cloud aks create
 
   cluster:delete:
     - task: cluster:config
-    - nuv cloud aks delete
+    - ops cloud aks delete
 
+  vm:config:
+    cmds:
+      - >
+        ops config azcloud 
+        --project=$AKS_PROJECT 
+        --region="{{.REGION}}" 
+        --vm="{{.VM_TYPE}}"
+        --disk="200"
+        --image="{{.IMAGE}}" 
+        --key=$HOME/.ssh/id_rsa.pub
+    requires:
+      vars: [ VM_TYPE,REGION,IMAGE ]
+
+  vm:create:
+    cmds:
+      - task: vm:config
+        vars:
+          VM_TYPE: "{{.VM_TYPE}}"
+          REGION: "{{.REGION}}"
+          IMAGE: "{{.IMAGE}}"
+      - ops cloud azcloud vm-create {{.NAME}}
+      - ops cloud azcloud vm-getip {{.NAME}} >_ip
+      - ops cloud {{.TYPE}} create SERVER=$(cat _ip) USERNAME=ubuntu
+    requires:
+      vars: [ NAME, TYPE, VM_TYPE, REGION, IMAGE ]
+
+  vm:delete:
+    cmds:
+      - task: vm:config
+        vars:
+          VM_TYPE: "{{.VM_TYPE}}"
+          REGION: "{{.REGION}}"
+          IMAGE: "{{.IMAGE}}"
+      - ops cloud azcloud vm-delete {{.NAME}}
+    requires:
+      vars: [ NAME,VM_TYPE,REGION, IMAGE ]
