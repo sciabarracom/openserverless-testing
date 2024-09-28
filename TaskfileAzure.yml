@@ -3,7 +3,7 @@ version: '3'
 tasks:
 
   check: 
-  - az account show
+    - az account show
 
   cluster:config:
     - >
@@ -33,9 +33,9 @@ tasks:
         --vm="{{.VM_TYPE}}"
         --disk="200"
         --image="{{.IMAGE}}" 
-        --key=$HOME/.ssh/id_rsa.pub
+        --key={{.SSH_KEY}}
     requires:
-      vars: [ VM_TYPE,REGION,IMAGE ]
+      vars: [ VM_TYPE,REGION,IMAGE,SSH_KEY ]
 
   vm:create:
     cmds:
@@ -46,7 +46,7 @@ tasks:
           IMAGE: "{{.IMAGE}}"
       - ops cloud azcloud vm-create {{.NAME}}
       - ops cloud azcloud vm-getip {{.NAME}} >_ip
-      - ops cloud {{.TYPE}} create SERVER=$(cat _ip) USERNAME=ubuntu
+      - ops cloud {{.TYPE}} create $(cat _ip) ubuntu
     requires:
       vars: [ NAME, TYPE, VM_TYPE, REGION, IMAGE ]
 
