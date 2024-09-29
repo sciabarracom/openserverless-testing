@@ -16,13 +16,13 @@
 # specific language governing permissions and limitations
 # under the License.
 
-nuv config enable --mongo
-nuv update apply
-nuv setup nuvolaris wait-cm JSONPATH='{.metadata.annotations.mongodb_url}'
+ops config enable --mongo
+ops update -apply
+ops setup nuvolaris wait-cm JSONPATH='{.metadata.annotations.mongodb_url}'
 
-if ! nuv config status | grep NUVOLARIS_MONGODB=true
+if ! ops config status | grep NUVOLARIS_MONGODB=true
 then echo SKIPPING ; exit 0
-elif nuv setup nuvolaris mongodb | grep hello
+elif ops setup nuvolaris mongodb | grep hello
 then echo SUCCESS ; exit 0
 else echo FAIL ; exit 1 
 fi

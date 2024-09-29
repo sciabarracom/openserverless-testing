@@ -16,13 +16,13 @@
 # specific language governing permissions and limitations
 # under the License.
 
-nuv config enable --minio
-nuv update apply
-nuv setup nuvolaris wait-cm JSONPATH='{.metadata.annotations.minio_bucket_data}'
+ops config enable --minio
+ops -update apply
+ops setup nuvolaris wait-cm JSONPATH='{.metadata.annotations.minio_bucket_data}'
 
-if ! nuv config status | grep NUVOLARIS_MINIO=true
+if ! ops config status | grep NUVOLARIS_MINIO=true
 then echo SKIPPING ; exit 0
-elif nuv setup nuvolaris minio | grep nuvolaris-data
+elif ops setup nuvolaris minio | grep nuvolaris-data
 then echo SUCCESS ; exit 0
 else echo FAIL ; exit 1 
 fi

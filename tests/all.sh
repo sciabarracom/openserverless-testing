@@ -19,8 +19,8 @@ TYPE="${1:?test type}"
 TYPE="$(echo $TYPE | awk -F- '{print $1}')"
 
 # echo
-export NUV_BRANCH=3.0.0-testing
-echo "*** using $NUV_BRANCH ***"
+export OPS_BRANCH=main
+echo "*** using $OPS_BRANCH ***"
 
 # if type not in (kind, k3s, mk8s, aks, eks, gke) exit
 

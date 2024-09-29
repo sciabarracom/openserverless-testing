@@ -42,49 +42,49 @@ export PREFL_NO_MEM_CHECK=true
 case "$TYPE" in
 kind)
     # create vm with docker
-    nuv config reset
-    nuv setup devcluster --uninstall
-    nuv setup devcluster
+    ops config reset
+    ops setup devcluster --uninstall
+    ops setup devcluster
     ;;
 k3s)
     # create vm and install in the server
-    nuv config reset
+    ops config reset
     # create vm without k3s
     if test -n "$K3S_IP"
     then 
         echo $K3S_IP>_ip
-        nuv config apihost api.k3s.nuvtest.net
+        ops config apihost api.k3s.nuvtest.net
     else
         task aws:vm:config
-        nuv cloud aws vm-create k3s-test
-        nuv cloud aws zone-update k3s.nuvtest.net --wildcard --vm=k3s-test
-        nuv cloud aws vm-getip k3s-test >_ip
+        ops cloud aws vm-create k3s-test
+        ops cloud aws zone-update k3s.nuvtest.net --wildcard --vm=k3s-test
+        ops cloud aws vm-getip k3s-test >_ip
     fi
     # install nuvolaris
-    nuv setup server $(cat _ip) ubuntu --uninstall
-    nuv setup server $(cat _ip) ubuntu
+    ops setup server $(cat _ip) ubuntu --uninstall
+    ops setup server $(cat _ip) ubuntu
     ;;
 mk8s)
-    nuv config reset
+    ops config reset
     # create vm with mk8s
     if test -n "$MK8S_IP"
     then 
-          nuv config apihost api.mk8s.nuvtest.net
-          nuv cloud mk8s kubeconfig SERVER=$MK8S_IP USERNAME=ubuntu
+          ops config apihost api.mk8s.nuvtest.net
+          ops cloud mk8s kubeconfig SERVER=$MK8S_IP USERNAME=ubuntu
     else
         task aws:vm:config
-        nuv cloud aws vm-create mk8s-test
-        nuv cloud aws zone-update mk8s.nuvtest.net --wildcard --vm=mk8s-test
-        nuv cloud aws vm-getip mk8s-test >_ip
-        nuv cloud mk8s create SERVER=$(cat _ip) USERNAME=ubuntu
-        nuv cloud mk8s kubeconfig SERVER=$(cat _ip) USERNAME=ubuntu
+        ops cloud aws vm-create mk8s-test
+        ops cloud aws zone-update mk8s.nuvtest.net --wildcard --vm=mk8s-test
+        ops cloud aws vm-getip mk8s-test >_ip
+        ops cloud mk8s create SERVER=$(cat _ip) USERNAME=ubuntu
+        ops cloud mk8s kubeconfig SERVER=$(cat _ip) USERNAME=ubuntu
     fi
     # install cluster
-    nuv setup cluster --uninstall
-    nuv setup cluster
+    ops setup cluster --uninstall
+    ops setup cluster
     ;;
 eks)
-    nuv config reset
+    ops config reset
     # create cluster
     if test -n "$EKS_KUBECONFIG_B64"
     then

@@ -18,31 +18,31 @@
 TYPE="${1:?test type}"
 TYPE="$(echo $TYPE | awk -F- '{print $1}')"
 
-nuv config enable --minio --static
-nuv update apply
+ops config enable --minio --static
+ops -update apply
 
-nuv util kube waitfor FOR=condition=ready OBJ=pod/nuvolaris-static-0 TIMEOUT=60
+ops util kube waitfor FOR=condition=ready OBJ=pod/nuvolaris-static-0 TIMEOUT=60
 
 user="demostaticuser"
-password=$(nuv -random --str 12)
+password=$(ops -random --str 12)
 
-if nuv admin adduser $user $user@email.com $password --minio | grep "whiskuser.nuvolaris.org/$user created"; then
+if ops admin adduser $user $user@email.com $password --minio | grep "whiskuser.nuvolaris.org/$user created"; then
     echo SUCCESS CREATING $user
 else
     echo FAIL CREATING $user
     exit 1
 fi
 
-nuv util kube waitfor FOR=condition=ready OBJ="wsku/$user" TIMEOUT=120
+ops util kube waitfor FOR=condition=ready OBJ="wsku/$user" TIMEOUT=120
 
-API_PROTOCOL=$(nuv debug apihost | awk '/whisk API host/{print $4}' | awk -F[/:] '{print $1}')
-API_DOMAIN=$(nuv debug apihost | awk '/whisk API host/{print $4}' | awk -F[/:] '{print $4}')
+API_PROTOCOL=$(ops debug apihost | awk '/whisk API host/{print $4}' | awk -F[/:] '{print $1}')
+API_DOMAIN=$(ops debug apihost | awk '/whisk API host/{print $4}' | awk -F[/:] '{print $4}')
 
 
 if [ "$TYPE" = "osh" ]; then
-    nuv debug kube wait OBJECT=route.route.openshift.io/$user-static-route JSONPATH="{.status.ingress[0].host}"
+    ops debug kube wait OBJECT=route.route.openshift.io/$user-static-route JSONPATH="{.status.ingress[0].host}"
 else
-    nuv debug kube wait OBJECT=ingress/$user-static-ingress JSONPATH="{.status.loadBalancer.ingress[0]}"
+    ops debug kube wait OBJECT=ingress/$user-static-ingress JSONPATH="{.status.loadBalancer.ingress[0]}"
 fi
 
 case "$TYPE" in

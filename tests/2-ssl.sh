@@ -22,7 +22,7 @@ then
 	exit 1
 fi
 
-# TYPE="$(nuv debug detect)"
+# TYPE="$(ops debug detect)"
 TYPE="${1:?test type}"
 EMAIL=msciabarra@apache.org
 
@@ -31,18 +31,18 @@ if [ "$TYPE" = "kind" ]; then
 	exit 0
 fi
 
-rn=$(nuv -random --str 5)
+rn=$(ops -random --str 5)
 
 if [ "$TYPE" = "osh" ]; then
 	# configure
-	nuv config apihost api.apps.nuvolaris.osh.nuvtest.net --tls $EMAIL
-	nuv update apply
+	ops config apihost api.apps.nuvolaris.osh.nuvtest.net --tls $EMAIL
+	ops -update apply
 else
-	nuv config reset
+	ops config reset
 	# configure
 	task aws:vm:config
 	nuv config apihost $rn.$TYPE.nuvtest.net --tls $EMAIL
-	nuv update apply
+	ops -update apply
 fi
 
 # check we have https

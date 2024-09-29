@@ -18,7 +18,7 @@
 TYPE="${1:?test type}"
 TYPE="$(echo $TYPE | awk -F- '{print $1}')"
 
-if nuv config status | grep NUVOLARIS_REDIS=true; then
+if ops config status | grep NUVOLARIS_REDIS=true; then
     echo "REDIS ENABLED"
 else
     echo "REDIS DISABLED - SKIPPING"
@@ -26,20 +26,20 @@ else
 fi
 
 user="demoredisuser"
-password=$(nuv -random --str 12)
+password=$(ops -random --str 12)
 
-if nuv admin adduser $user $user@email.com $password --redis | grep "whiskuser.nuvolaris.org/$user created"; then
+if ops admin adduser $user $user@email.com $password --redis | grep "whiskuser.nuvolaris.org/$user created"; then
     echo SUCCESS CREATING $user
 else
     echo FAIL CREATING $user
     exit 1
 fi
 
-nuv util kube waitfor FOR=condition=ready OBJ="wsku/$user" TIMEOUT=120
+ops util kube waitfor FOR=condition=ready OBJ="wsku/$user" TIMEOUT=120
 
 case "$TYPE" in
 kind)
-    if NUV_LOGIN=$user NUV_PASSWORD=$password nuv -login http://localhost:3233 | grep "Successfully logged in as $user."; then
+    if OPS_USER=$user OPS_PASSWORD=$password ops -login http://localhost:3233 | grep "Successfully logged in as $user."; then
         echo SUCCESS LOGIN
     else
         echo FAIL LOGIN
@@ -47,8 +47,8 @@ kind)
     fi
     ;;
 *)
-    APIURL=$(nuv debug apihost | awk '/whisk API host/{print $4}')
-    if NUV_LOGIN=$user NUV_PASSWORD=$password nuv -login $APIURL | grep "Successfully logged in as $user."; then
+    APIURL=$(ops debug apihost | awk '/whisk API host/{print $4}')
+    if OPS_USER=$user OPS_PASSWORD=$password ops -login $APIURL | grep "Successfully logged in as $user."; then
         echo SUCCESS LOGIN
     else
         echo FAIL LOGIN
@@ -57,22 +57,22 @@ kind)
     ;;
 esac
 
-if nuv setup nuvolaris redis | grep hello; then
+if ops setup nuvolaris redis | grep hello; then
     echo SUCCESS SETUP REDIS ACTION
 else
     echo FAIL SETUP REDIS ACTION
     exit 1
 fi
 
-if nuv -wsk action list | grep "/$user/hello/redis"; then
+if ops -wsk action list | grep "/$user/hello/redis"; then
     echo SUCCESS USER REDIS ACTION LIST
 else
     echo FAIL USER REDIS ACTION LIST
     exit 1
 fi
 
-REDIS_URL=$(nuv -config REDIS_URL)
-REDIS_PREFIX=$(nuv -config REDIS_PREFIX)
+REDIS_URL=$(ops -config REDIS_URL)
+REDIS_PREFIX=$(ops -config REDIS_PREFIX)
 
 if [ -z "$REDIS_URL" ]; then
     echo FAIL REDIS_URL
@@ -88,7 +88,7 @@ else
     echo SUCCESS REDIS_PREFIX
 fi
 
-if nuv -wsk action invoke hello/redis -p redis_url "$REDIS_URL" -p redis_prefix "$REDIS_PREFIX" -r | grep hello; then
+if ops -wsk action invoke hello/redis -p redis_url "$REDIS_URL" -p redis_prefix "$REDIS_PREFIX" -r | grep hello; then
     echo SUCCESS
     exit 0
 else

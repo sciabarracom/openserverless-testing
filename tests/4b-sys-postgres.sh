@@ -16,11 +16,11 @@
 # specific language governing permissions and limitations
 # under the License.
 
-nuv config enable --postgres
-nuv update apply
-nuv setup nuvolaris wait-cm JSONPATH='{.metadata.annotations.postgres_url}'
+ops config enable --postgres
+ops -update apply
+ops setup nuvolaris wait-cm JSONPATH='{.metadata.annotations.postgres_url}'
 
-if ! nuv config status | grep NUVOLARIS_POSTGRES=true
+if ! ops config status | grep NUVOLARIS_POSTGRES=true
 then echo SKIPPING ; exit 0
 elif nuv setup nuvolaris postgres | grep 'Nuvolaris Postgres is up and running!'
 then echo SUCCESS ; exit 0

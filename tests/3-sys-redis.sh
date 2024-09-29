@@ -17,11 +17,11 @@
 # under the License.
 
 
-nuv config enable --redis
-nuv update apply
-nuv setup nuvolaris wait-cm JSONPATH='{.metadata.annotations.redis_prefix}'
+ops config enable --redis
+ops -update apply
+ops setup nuvolaris wait-cm JSONPATH='{.metadata.annotations.redis_prefix}'
 
-if nuv setup nuvolaris redis | grep hello
+if ops setup nuvolaris redis | grep hello
 then echo SUCCESS ; exit 0
 else echo FAIL ; exit 1 
 fi

@@ -19,36 +19,36 @@ TYPE="${1:?test type}"
 TYPE="$(echo $TYPE | awk -F- '{print $1}')"
 
 user="testactionuser"
-password=$(nuv -random --str 12)
+password=$(ops -random --str 12)
 
-if nuv admin adduser $user $user@email.com $password --minio --redis --mongodb --postgres | grep "whiskuser.nuvolaris.org/$user created"
+if ops admin adduser $user $user@email.com $password --minio --redis --mongodb --postgres | grep "whiskuser.nuvolaris.org/$user created"
 then echo SUCCESS CREATING $user
 else echo FAIL CREATING $user; exit 1 
 fi
 
-nuv util kube waitfor FOR=condition=ready OBJ="wsku/$user" TIMEOUT=600
+ops util kube waitfor FOR=condition=ready OBJ="wsku/$user" TIMEOUT=600
 
 case "$TYPE" in
     (kind) 
-        if NUV_LOGIN=$user NUV_PASSWORD=$password nuv -login http://localhost:80 | grep "Successfully logged in as $user."
+        if OPS_USER=$user OPS_PASSWORD=$password ops -login http://localhost:80 | grep "Successfully logged in as $user."
         then echo SUCCESS LOGIN
         else echo FAIL LOGIN ; exit 1 
         fi
     ;;
     *)
-        APIURL=$(nuv debug apihost | awk '/whisk API host/{print $4}')
-        if NUV_LOGIN=$user NUV_PASSWORD=$password nuv -login $APIURL | grep "Successfully logged in as $user."
+        APIURL=$(ops debug apihost | awk '/whisk API host/{print $4}')
+        if OPS_USER=$user OPS_PASSWORD=$password ops -login $APIURL | grep "Successfully logged in as $user."
         then echo SUCCESS LOGIN
         else echo FAIL LOGIN ; exit 1 
         fi
     ;;    
 esac
 
-export MINIO_ACCESS_KEY=$(nuv -config MINIO_ACCESS_KEY)
-export MINIO_SECRET_KEY=$(nuv -config MINIO_SECRET_KEY)
-export MINIO_HOST=$(nuv -config MINIO_HOST)
-export MINIO_PORT=$(nuv -config MINIO_PORT)
-export MINIO_DATA_BUCKET=$(nuv -config MINIO_DATA_BUCKET)
+export MINIO_ACCESS_KEY=$(ops -config MINIO_ACCESS_KEY)
+export MINIO_SECRET_KEY=$(ops -config MINIO_SECRET_KEY)
+export MINIO_HOST=$(ops -config MINIO_HOST)
+export MINIO_PORT=$(ops -config MINIO_PORT)
+export MINIO_DATA_BUCKET=$(ops -config MINIO_DATA_BUCKET)
 export MINIO_STATIC_BUCKET=$(nuv -config MINIO_STATIC_BUCKET)
 export REDIS_URL=$(nuv -config REDIS_URL)
 export REDIS_PREFIX=$(nuv -config REDIS_PREFIX)
