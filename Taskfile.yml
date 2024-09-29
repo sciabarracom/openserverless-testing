@@ -59,7 +59,7 @@ tasks:
           IMAGE: ubuntu-minimal-2204-lts
     - task: aws:vm:config
     - nuv cloud gcloud vm-getip k3s-test >_ip
-    - nuv cloud aws zone-update k3s.nuvtest.net --wildcard --ip=$(cat _ip)
+    - nuv cloud aws zone-update k3s.opsv.xyz --wildcard --ip=$(cat _ip)
 
   k3s:arm:create:
     cmds:
@@ -72,7 +72,7 @@ tasks:
           IMAGE: ubuntu-minimal-2204-lts-arm64
     - task: aws:vm:config
     - nuv cloud gcloud vm-getip k3s-arm-test >_ip
-    - nuv cloud aws zone-update arm.nuvtest.net --wildcard --ip=$(cat _ip)   
+    - nuv cloud aws zone-update arm.opsv.xyz --wildcard --ip=$(cat _ip)   
 
   mk8s:create:
     cmds:
@@ -83,7 +83,7 @@ tasks:
     - task: aws:vm:config
     - task: gcp:vm:config
     - nuv cloud gcloud vm-getip mk8s-test >_ip
-    - nuv cloud aws zone-update mk8s.nuvtest.net --wildcard --ip=$(cat _ip)
+    - nuv cloud aws zone-update mk8s.opsv.xyz --wildcard --ip=$(cat _ip)
 
   k3s:delete:
     cmds:
@@ -128,7 +128,7 @@ tasks:
     cmds:
     - task aws:cluster:create
     - nuv cloud eks lb >_cname
-    - nuv cloud aws zone-update eks.nuvtest.net --wildcard --cname=$(cat _cname)
+    - nuv cloud aws zone-update eks.opsv.xyz --wildcard --cname=$(cat _cname)
 
   eks:delete:
     cmds:
@@ -138,7 +138,7 @@ tasks:
     cmds:
     - task azure:cluster:create
     - nuv cloud aks lb >_ip
-    - nuv cloud aws zone-update aks.nuvtest.net --wildcard --ip $(cat _ip)
+    - nuv cloud aws zone-update aks.opsv.xyz --wildcard --ip $(cat _ip)
   
   aks:delete:
     cmds:
@@ -208,7 +208,7 @@ tasks:
       echo GCLOUD_SERVICE_ACCOUNT_B64=\"$GCLOUD_SERVICE_ACCOUNT_B64\" >>.secrets
 
   secrets:
-      cmds:
+    cmds:
       - echo SKIP_SSL=true >.secrets
       - task: gcp:vm:config
       - task: secrets-id
@@ -263,20 +263,20 @@ tasks:
     - |
       eval $(ssh-agent -s) 
       ssh-add conf/id_rsa
-      nuv cloud k3s kubeconfig SERVER=api.k3s.nuvtest.net USERNAME=ubuntu
-      nuv cloud mk8s kubeconfig SERVER=api.mk8s.nuvtest.net USERNAME=ubuntu
+      ops cloud k3s kubeconfig api.k3s.opsv.xyz ubuntu
+      ops cloud mk8s kubeconfig api.mk8s.opsv.xyz ubuntu
 
   kubeconfig:
     - task: config
     - task: login
     - task: vmconfig
     - echo "eks kubeconfig"
-    - nuv cloud eks kubeconfig
+    - ops cloud eks kubeconfig
     - echo "gke kubeconfig"
-    - nuv cloud gke kubeconfig
+    - ops cloud gke kubeconfig
     - echo "openshift kubeconfig"
-    - KUBECONFIG=conf/osh.kubeconfig oc login https://api.nuvolaris-testing.oshgcp.nuvtest.net:6443 --insecure-skip-tls-verify=true  -u kubeadmin -p $OSH_KUBEADMIN_PASSWORD
-    - nuv cloud osh import conf/osh.kubeconfig 
-    - nuv cloud aks kubeconfig
-    - nuv config use
+    - KUBECONFIG=conf/osh.kubeconfig oc login https://api.nuvolaris-testing.oshgcp.opsv.xyz:6443 --insecure-skip-tls-verify=true  -u kubeadmin -p $OSH_KUBEADMIN_PASSWORD
+    - ops cloud osh import conf/osh.kubeconfig 
+    - ops cloud aks kubeconfig
+    - ops config use
 

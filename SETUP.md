@@ -7,12 +7,12 @@
 - Upload the secrets and run the tests on GitHub actions
 - Rebuild the CI environment
 
-# Recover access to the CI environenent
+# Recover access to the CI environment
 
 - Copy `.env.dist` in `.env` and put the secrets in it (ask us of course)
-- Execute `task kubeconfig`` to load all the kubeconfig in nuv.
-- Execute `nuv config use` then `nuv config use <n>` to select a configuration
-- Execute `nuv setup nuvolaris login` to log into one of them
+- Execute `task kubeconfig` to load all the kubeconfig in ops.
+- Execute `ops config use` then `ops config use <n>` to select a configuration
+- Execute `ops setup nuvolaris login` to log into one of them
 
 # Generate all the secrets
 
@@ -20,26 +20,27 @@
 - `task secrets` generates a  `.secrets` with all the secrets for github
 - now you can run the tests, most notably the `tests/1-deploy.sh` that builds environments
 
-# Setup of Continuos Integration
+# Setup of Continuous Integration
 
 Those notes are a remindinder of the steps executed to build our CI environment.
 
 ## Overview
 
-We have a stable test environment on AWS/GCloud/Azure  with:
+We have a stable test environment on Azure/AWS/GCloud with:
 
-- in AWS, a domain (nuvtest.net) with subzones. A subzone (oshgcp.nuvest.test) is on GCP, others in AWS
+- in Azure, a domain (opsv.xyz) with subzones. All subzones are currently in Azure
+- in Azure, an AKS cluster
 - in AWS, an EKS cluster
 - in Gcloud, a GKE cluster
 - in Gcloud, an OpenShift cluster 
 - in Gcloud, a virtual machine k3s-test and mk8s-test
-- in Azure, an AKS cluster
+
 
 # Setup
 
 ## Prereq
 
-You to isntall a few tools:
+You to install a few tools:
 
 - [`task`](taskfile.dev)
 - `aws` cli
@@ -84,16 +85,16 @@ stored in ~/.ssh/id_rsa and ~/.id_rsa.pub
 
 # DNS
 
-- Created the zone `oshgcp.nuvtest.net` in Gcloud
+- Created the zone `oshgcp.opsv.xyz` in Gcloud
 
 - Created the following zones in AWS Route53
-  - k3s.nuvtest.net
-  - mk8s.nuvtest.net
-  - eks.nuvtest.net
-  - aks.nuvtest.net 
-  - gke.nuvtest.net 
+  - k3s.opsv.xyz
+  - mk8s.opsv.xyz
+  - eks.opsv.xyz
+  - aks.opsv.xyz 
+  - gke.opsv.xyz 
 
-- Registered a domain in AWS (nuvtest.net) and delegated all the subzones.
+- Registered a domain in AWS (opsv.xyz) and delegated all the subzones.
 
 # OpenShift
 
@@ -104,7 +105,7 @@ First running the openshift-install and then manually tweaked the configuration.
 Note you need:
 - an id_rsa.pub
 - for gcloud, the service account file 
-- the dns zone ub GCP we created (oshgcp.nuvtest.net)
+- the dns zone ub GCP we created (oshgcp.opsv.xyz)
 - the pullSecret for OKD (open source openshift) as follows: 
 
 ```
