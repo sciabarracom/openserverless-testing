@@ -1,0 +1,21 @@
+### Reset
+
+## Config
+ops config reset
+ops cloud azcloud vm-list
+
+## Create VM k3s
+ops cloud azcloud vm-create k3s-test
+ops cloud azcloud vm-create mk8s-test
+ops cloud azcloud vm-list
+#! see the vm
+
+
+ops config storage --class=auto --provisioner=auto
+ops config apihost auto --protocol=http
+
+# Install k3s
+KIP=$(ops cloud azcloud vm-getip k3s-test)
+ops setup server $KIP ubuntu
+
+ops config use

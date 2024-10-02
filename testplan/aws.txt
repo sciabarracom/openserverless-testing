@@ -21,7 +21,7 @@ nuv config use
 
 ## Install microk8s
 MIP=$(nuv cloud aws vm-getip mk8s-test)
-nuv cloud mk8s create ERVER=$MIP USERNAME=ubuntu
+nuv cloud mk8s create SERVER=$MIP USERNAME=ubuntu
 nuv config use
 
 # recover config

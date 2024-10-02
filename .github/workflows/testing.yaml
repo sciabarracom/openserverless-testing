@@ -6,12 +6,16 @@ env:
   NGROK_PASSWORD: ${{ secrets.NGROK_PASSWORD }}
   OPS_BRANCH: main
 
+
 jobs:
   kubectl-demo:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+      - uses: cachix/install-nix-action@v27
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable
       - name: Install ops
         run: |
              curl -sL bit.ly/get-ops | bash
@@ -23,7 +27,9 @@ jobs:
           export-env: true
         env:
           OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
-          AKS_KUBE_CONFIG: op://OpenServerless/aks_kubeconfig/text
+          K3S_IP: op://OpenServerless/K3S_IP/text
+          MK8S_IP: op://OpenServerless/K3S_IP/text
+          ID_RSA_B64: op://OpenServerless/ID_RSA_B64/text
       - name: Get nodes
         uses: steebchen/kubectl@v2.0.0
         with: # defaults to latest kubectl binary version
