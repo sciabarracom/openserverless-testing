@@ -63,7 +63,6 @@ k3s)
         # ops cloud aws vm-getip k3s-test >_ip
     fi
     # install openserverless
-    ops config storage --class=auto --provisioner=auto
     ops config apihost auto --protocol=http
     ops setup server $(cat _ip) ubuntu --uninstall
     ops setup server $(cat _ip) ubuntu
