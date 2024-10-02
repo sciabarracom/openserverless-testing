@@ -17,10 +17,10 @@
 # under the License.
 
 ops config enable --minio
-ops -update apply
-ops setup nuvolaris wait-cm JSONPATH='{.metadata.annotations.minio_bucket_data}'
+ops update apply
+ops setup nuvolaris wait-cm JSONPATH='{.metadata.annotations.s3_bucket_data}'
 
-if ! ops config status | grep NUVOLARIS_MINIO=true
+if ! ops config status | grep OPERATOR_COMPONENT_MINIO=true
 then echo SKIPPING ; exit 0
 elif ops setup nuvolaris minio | grep nuvolaris-data
 then echo SUCCESS ; exit 0

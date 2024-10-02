@@ -18,7 +18,7 @@
 TYPE="${1:?test type}"
 TYPE="$(echo $TYPE | awk -F- '{print $1}')"
 
-if ops config status | grep NUVOLARIS_MONGODB=true; then
+if ops config status | grep OPERATOR_COMPONENT_MONGODB=true; then
     echo "MONGODB ENABLED"
 else
     echo "MONGODB DISABLED - SKIPPING"
@@ -71,7 +71,7 @@ else
     exit 1
 fi
 
-MONGODB_URL=$(nuv -config MONGODB_URL)
+MONGODB_URL=$(ops -config MONGODB_URL)
 
 if [ -z "$MONGODB_URL" ]; then
     echo FAIL USER MONGODB_URL
@@ -80,7 +80,7 @@ else
     echo SUCCESS USER MONGODB_URL
 fi
 
-if nuv -wsk action invoke hello/mongodb -p mongodb_url "$MONGODB_URL" -r | grep "hello"; then
+if ops -wsk action invoke hello/mongodb -p mongodb_url "$MONGODB_URL" -r | grep "hello"; then
     echo SUCCESS
     exit 0
 else

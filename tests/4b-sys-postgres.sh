@@ -17,12 +17,12 @@
 # under the License.
 
 ops config enable --postgres
-ops -update apply
+ops update apply
 ops setup nuvolaris wait-cm JSONPATH='{.metadata.annotations.postgres_url}'
 
-if ! ops config status | grep NUVOLARIS_POSTGRES=true
+if ! ops config status | grep OPERATOR_COMPONENT_POSTGRES=true
 then echo SKIPPING ; exit 0
-elif nuv setup nuvolaris postgres | grep 'Nuvolaris Postgres is up and running!'
+elif ops setup nuvolaris postgres | grep 'Nuvolaris Postgres is up and running!'
 then echo SUCCESS ; exit 0
 else echo FAIL ; exit 1
 fi

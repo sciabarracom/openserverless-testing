@@ -18,7 +18,7 @@
 TYPE="${1:?test type}"
 TYPE="$(echo $TYPE | awk -F- '{print $1}')"
 
-if ops config status | grep NUVOLARIS_POSTGRES=true; then
+if ops config status | grep OPERATOR_COMPONENT_POSTGRES=true; then
     echo "POSTGRES ENABLED"
 else
     echo "POSTGRES DISABLED - SKIPPING"

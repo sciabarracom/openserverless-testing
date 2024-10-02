@@ -121,7 +121,7 @@ echo "##############################################"
 
 echo "##############################################"
 echo "#                                            #"
-echo "#            TESTING NUV RUNTIMES $TYPE      #"
+echo "#            TESTING OPS RUNTIMES $TYPE      #"
 echo "#                                            #"
 echo "##############################################"
 ./14-runtime-testing.sh $TYPE

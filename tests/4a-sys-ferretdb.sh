@@ -16,11 +16,11 @@
 # specific language governing permissions and limitations
 # under the License.
 
-ops config enable --mongo
-ops update -apply
+ops config enable --mongodb
+ops update apply
 ops setup nuvolaris wait-cm JSONPATH='{.metadata.annotations.mongodb_url}'
 
-if ! ops config status | grep NUVOLARIS_MONGODB=true
+if ! ops config status | grep OPERATOR_COMPONENT_MONGODB=true
 then echo SKIPPING ; exit 0
 elif ops setup nuvolaris mongodb | grep hello
 then echo SUCCESS ; exit 0

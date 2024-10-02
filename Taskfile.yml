@@ -38,8 +38,8 @@ tasks:
   setup: { silent: true }
 
   status:
-    - nuv config use
-    - nuv debug info
+    - $OPS config use
+    - $OPS debug info
 
   kind:create:
     - which docker

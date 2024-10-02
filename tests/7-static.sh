@@ -19,7 +19,7 @@ TYPE="${1:?test type}"
 TYPE="$(echo $TYPE | awk -F- '{print $1}')"
 
 ops config enable --minio --static
-ops -update apply
+ops update apply
 
 ops util kube waitfor FOR=condition=ready OBJ=pod/nuvolaris-static-0 TIMEOUT=60
 
