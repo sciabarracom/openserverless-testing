@@ -1,14 +1,13 @@
-name: nuvolaris-testing
+name: openserverless-testing
 on: push
 
 env:
   NGROK_TOKEN: ${{ secrets.NGROK_TOKEN }}
   #NGROK_PASSWORD: ${{ secrets.NGROK_PASSWORD }}
   OPS_BRANCH: main
-  #debug: 1
 
 jobs:
-  kubectl-demo:
+  op-testing:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -40,7 +39,7 @@ jobs:
           #AWS_SECRET_ACCESS_KEY: op://OpenServerless/TESTING/AWS_SECRET_ACCESS_KEY
           #GCLOUD_SERVICE_ACCOUNT_B64: op://OpenServerless/TESTING/GCLOUD_SERVICE_ACCOUNT_B64
 
-      - name: Debug Action (if requested)
-        run:  .github/debugAction.sh
-      - name: Wait for Debug (if requested)
-        run: .github/waitIfDebug.sh
+#      - name: Debug Action (if requested)
+#        run:  .github/debugAction.sh
+#      - name: Wait for Debug (if requested)
+#        run: .github/waitIfDebug.sh
