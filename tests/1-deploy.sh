@@ -55,6 +55,7 @@ k3s)
         echo $K3S_IP>_ip
         ops config apihost api.k3s.opsv.xyz
     else
+        echo "Should fix when not K3S_IP"
         # TODO: fix this
         # task aws:vm:config
         # ops cloud aws vm-create k3s-test
