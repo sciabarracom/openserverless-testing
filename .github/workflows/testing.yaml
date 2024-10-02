@@ -5,7 +5,7 @@ env:
   NGROK_TOKEN: ${{ secrets.NGROK_TOKEN }}
   NGROK_PASSWORD: ${{ secrets.NGROK_PASSWORD }}
   OPS_BRANCH: main
-
+  debug: 1
 
 jobs:
   kubectl-demo:
@@ -30,11 +30,7 @@ jobs:
           K3S_IP: op://OpenServerless/K3S_IP/text
           MK8S_IP: op://OpenServerless/K3S_IP/text
           ID_RSA_B64: op://OpenServerless/ID_RSA_B64/text
-      - name: Get nodes
-        uses: steebchen/kubectl@v2.0.0
-        with: # defaults to latest kubectl binary version
-          config: "${{ env.AKS_KUBE_CONFIG }}"
-          command: get nodes
+
       - name: Debug Action (if requested)
         run:  .github/debugAction.sh
       - name: Wait for Debug (if requested)
