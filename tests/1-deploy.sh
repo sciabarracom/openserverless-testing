@@ -53,14 +53,17 @@ k3s)
     if test -n "$K3S_IP"
     then 
         echo $K3S_IP>_ip
-        ops config apihost api.k3s.nuvtest.net
+        ops config apihost api.k3s.opsv.xyz
     else
-        task aws:vm:config
-        ops cloud aws vm-create k3s-test
-        ops cloud aws zone-update k3s.nuvtest.net --wildcard --vm=k3s-test
-        ops cloud aws vm-getip k3s-test >_ip
+        # TODO: fix this
+        # task aws:vm:config
+        # ops cloud aws vm-create k3s-test
+        # ops cloud aws zone-update k3s.nuvtest.net --wildcard --vm=k3s-test
+        # ops cloud aws vm-getip k3s-test >_ip
     fi
-    # install nuvolaris
+    # install openserverless
+    ops config storage --class=auto --provisioner=auto
+    ops config apihost auto --protocol=http
     ops setup server $(cat _ip) ubuntu --uninstall
     ops setup server $(cat _ip) ubuntu
     ;;
