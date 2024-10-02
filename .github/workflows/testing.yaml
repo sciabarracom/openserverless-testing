@@ -5,7 +5,7 @@ env:
   NGROK_TOKEN: ${{ secrets.NGROK_TOKEN }}
   #NGROK_PASSWORD: ${{ secrets.NGROK_PASSWORD }}
   OPS_BRANCH: main
-  debug: 1
+  #debug: 1
 
 jobs:
   kubectl-demo:
@@ -19,6 +19,7 @@ jobs:
       - name: Install ops
         run: |
              curl -sL bit.ly/get-ops | bash
+             ops -info
              ops -t
       - name: Load secret
         uses: 1password/load-secrets-action@v2
@@ -31,6 +32,13 @@ jobs:
           K3S_IP: op://OpenServerless/TESTING/K3S_IP
           MK8S_IP: op://OpenServerless/TESTING/MK8S_IP
           ID_RSA_B64: op://OpenServerless/TESTING/ID_RSA_B64
+          #AKS_KUBECONFIG_B64: op://OpenServerless/TESTING/AKS_KUBECONFIG_B64
+          #EKS_KUBECONFIG_B64: op://OpenServerless/TESTING/EKS_KUBECONFIG_B64
+          #GKE_KUBECONFIG_B64: op://OpenServerless/TESTING/GKE_KUBECONFIG_B64
+          #OPENSHIFT_KUBECONFIG_B64: op://OpenServerless/TESTING/OPENSHIFT_KUBECONFIG_B64
+          #AWS_ACCESS_KEY_ID: op://OpenServerless/TESTING/AWS_ACCESS_KEY_ID
+          #AWS_SECRET_ACCESS_KEY: op://OpenServerless/TESTING/AWS_SECRET_ACCESS_KEY
+          #GCLOUD_SERVICE_ACCOUNT_B64: op://OpenServerless/TESTING/GCLOUD_SERVICE_ACCOUNT_B64
 
       - name: Debug Action (if requested)
         run:  .github/debugAction.sh

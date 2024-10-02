@@ -26,9 +26,9 @@ on:
 
 env:
   PLATFORM: ${{ github.ref_name }}
-  K3S_IP: ${{ secrets.K3S_IP }}
-  MK8S_IP: ${{ secrets.MK8S_IP }}
-  ID_RSA_B64: ${{ secrets.ID_RSA_B64 }}
+  #K3S_IP: ${{ secrets.K3S_IP }}
+  #MK8S_IP: ${{ secrets.MK8S_IP }}
+  #ID_RSA_B64: ${{ secrets.ID_RSA_B64 }}
   AKS_KUBECONFIG_B64: ${{ secrets.AKS_KUBECONFIG_B64 }}
   EKS_KUBECONFIG_B64: ${{ secrets.EKS_KUBECONFIG_B64 }}
   GKE_KUBECONFIG_B64: ${{ secrets.GKE_KUBECONFIG_B64 }}
@@ -39,7 +39,7 @@ env:
   USE_GKE_GCLOUD_AUTH_PLUGIN: "True"
   OPS_BRANCH: main
   NGROK_TOKEN: ${{ secrets.NGROK_TOKEN }}
-  NGROK_PASSWORD: ${{ secrets.NGROK_PASSWORD }}
+  #NGROK_PASSWORD: ${{ secrets.NGROK_PASSWORD }}
 
 jobs:
   test-linux:
@@ -54,19 +54,34 @@ jobs:
           curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
           sudo apt update
           sudo apt-get install google-cloud-sdk-gke-gcloud-auth-plugin kubectl  
-        if: ${{ startsWith(github.ref_name, 'gke') }} 
+        if: ${{ startsWith(github.ref_name, 'gke') }}
+      - name: Install ops
+        run: |
+          curl -sL bit.ly/get-ops | bash
+          ops -t
+      - name: Load secret
+        uses: 1password/load-secrets-action@v2
+        with:
+          # Export loaded secrets as environment variables
+          export-env: true
+        env:
+          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+          NGROK_PASSWORD: op://OpenServerless/TESTING/NGROK_PASSWORD
+          K3S_IP: op://OpenServerless/TESTING/K3S_IP
+          MK8S_IP: op://OpenServerless/TESTING/MK8S_IP
+          ID_RSA_B64: op://OpenServerless/TESTING/ID_RSA_B64
+          #AKS_KUBECONFIG_B64: op://OpenServerless/TESTING/AKS_KUBECONFIG_B64
+          #EKS_KUBECONFIG_B64: op://OpenServerless/TESTING/EKS_KUBECONFIG_B64
+          #GKE_KUBECONFIG_B64: op://OpenServerless/TESTING/GKE_KUBECONFIG_B64
+          #OPENSHIFT_KUBECONFIG_B64: op://OpenServerless/TESTING/OPENSHIFT_KUBECONFIG_B64
+          #AWS_ACCESS_KEY_ID: op://OpenServerless/TESTING/AWS_ACCESS_KEY_ID
+          #AWS_SECRET_ACCESS_KEY: op://OpenServerless/TESTING/AWS_SECRET_ACCESS_KEY
+          #GCLOUD_SERVICE_ACCOUNT_B64: op://OpenServerless/TESTING/GCLOUD_SERVICE_ACCOUNT_B64
+
       - name: Debug Action (if requested)
         run:  .github/debugAction.sh
       - name: Wait for Debug (if requested)
         run: .github/waitIfDebug.sh
-      - name: Nuv
-        run: |
-          VER="$(curl https://raw.githubusercontent.com/nuvolaris/olaris/3.0.0-testing/nuvroot.json | jq .version -r)"
-          URL="https://github.com/nuvolaris/nuv/releases/download/$VER/nuv_${VER}_amd64.deb"
-          wget --no-verbose $URL -O nuv.deb
-          sudo dpkg -i nuv.deb
-          nuv -update
-          nuv -info
       - name: 1 Deploy
         run: |
              touch .secrets
@@ -119,11 +134,11 @@ jobs:
           $procMain.WaitForExit()
           echo "Install completed"
           Add-Content $env:GITHUB_PATH "C:\Program Files\Nuvolaris"
-      - name: Nuv Update
+      - name: Ops Update
         shell: bash
         run: |
-           nuv -update
-           nuv -info
+           ops -update
+           ops -info
       - name: 1 Deploy
         shell: bash
         run: tests/1-deploy.sh $PLATFORM
