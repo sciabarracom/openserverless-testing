@@ -37,6 +37,7 @@ env:
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   GCLOUD_SERVICE_ACCOUNT_B64: ${{ secrets.GCLOUD_SERVICE_ACCOUNT_B64 }}
   USE_GKE_GCLOUD_AUTH_PLUGIN: "True"
+  OPS_REPO: http://github.com/d4rkstar/openserverless-task
   OPS_BRANCH: main
   NGROK_TOKEN: ${{ secrets.NGROK_TOKEN }}
   #NGROK_PASSWORD: ${{ secrets.NGROK_PASSWORD }}

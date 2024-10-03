@@ -1,5 +1,8 @@
 name: openserverless-testing
-#on: push
+on:
+  push:
+    branches:
+      - test
 
 env:
   NGROK_TOKEN: ${{ secrets.NGROK_TOKEN }}
