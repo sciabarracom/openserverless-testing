@@ -18,7 +18,7 @@
 
 
 ops config enable --redis
-ops -update apply
+ops update apply
 ops setup nuvolaris wait-cm JSONPATH='{.metadata.annotations.redis_prefix}'
 
 if ops setup nuvolaris redis | grep hello
