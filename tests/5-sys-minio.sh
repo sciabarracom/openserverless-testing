@@ -17,7 +17,7 @@
 # under the License.
 
 ops config enable --minio
-ops -update apply
+ops update apply
 ops setup nuvolaris wait-cm JSONPATH='{.metadata.annotations.minio_bucket_data}'
 
 if ! ops config status | grep NUVOLARIS_MINIO=true

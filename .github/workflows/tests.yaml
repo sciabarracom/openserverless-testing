@@ -60,7 +60,7 @@ jobs:
         run: |
           curl -sL bit.ly/get-ops | bash
           ops -info
-          ops -t
+          ops -t > /dev/null
       - name: Load secret
         uses: 1password/load-secrets-action@v2
         with:

@@ -49,66 +49,66 @@ export MINIO_SECRET_KEY=$(ops -config MINIO_SECRET_KEY)
 export MINIO_HOST=$(ops -config MINIO_HOST)
 export MINIO_PORT=$(ops -config MINIO_PORT)
 export MINIO_DATA_BUCKET=$(ops -config MINIO_DATA_BUCKET)
-export MINIO_STATIC_BUCKET=$(nuv -config MINIO_STATIC_BUCKET)
-export REDIS_URL=$(nuv -config REDIS_URL)
-export REDIS_PREFIX=$(nuv -config REDIS_PREFIX)
-export MONGODB_URL=$(nuv -config MONGODB_URL)
+export MINIO_STATIC_BUCKET=$(ops -config MINIO_STATIC_BUCKET)
+export REDIS_URL=$(ops -config REDIS_URL)
+export REDIS_PREFIX=$(ops -config REDIS_PREFIX)
+export MONGODB_URL=$(ops -config MONGODB_URL)
 export MONGODB_DB=$user
-export POSTGRES_URL=$(nuv -config POSTGRES_URL)
+export POSTGRES_URL=$(ops -config POSTGRES_URL)
 
 PWD=$(pwd)
 
-if nuv -wsk project deploy --manifest ${PWD}/test-runtimes/manifest.yaml | grep Success
+if ops -wsk project deploy --manifest ${PWD}/test-runtimes/manifest.yaml | grep Success
 then echo SUCCESS DEPLOY PROJECT;
 else echo FAIL DEPLOY PROJECT; exit 1 
 fi
 
-if nuv -wsk action invoke javascript/hello -r| grep world 
+if ops -wsk action invoke javascript/hello -r| grep world
 then echo SUCCESS JS HELLO;
 else echo FAIL JS HELLO; exit 1
 fi
 
-if nuv -wsk action invoke javascript/redis -r| grep hello
+if ops -wsk action invoke javascript/redis -r| grep hello
 then echo SUCCESS JS REDIS;
 else echo FAIL JS REDIS; exit 1 
 fi
 
-if nuv -wsk action invoke javascript/mongodb -r| grep hello
+if ops -wsk action invoke javascript/mongodb -r| grep hello
 then echo SUCCESS JS FERRETDB;
 else echo FAIL JS FERRETDB; exit 1 
 fi
 
-if nuv -wsk action invoke javascript/postgres -r| grep 'Nuvolaris Postgres is up and running!'
+if ops -wsk action invoke javascript/postgres -r| grep 'Nuvolaris Postgres is up and running!'
 then echo SUCCESS JS POSTGRES; 
 else echo FAIL JS POSTGRES; exit 1 
 fi
 
-if nuv -wsk action invoke javascript/minio -r| grep "$user-data"
+if ops -wsk action invoke javascript/minio -r| grep "$user-data"
 then echo SUCCESS JS MINIO; 
 else echo FAIL JS MINIO; exit 1 
 fi
 
-if nuv -wsk action invoke python/hello -r| grep world 
+if ops -wsk action invoke python/hello -r| grep world
 then echo SUCCESS PYTHON HELLO;
 else echo FAIL PYTHON HELLO; exit 1
 fi
 
-if nuv -wsk action invoke python/redis -r| grep world
+if ops -wsk action invoke python/redis -r| grep world
 then echo SUCCESS PYTHON REDIS;
 else echo FAIL PYTHON REDIS; exit 1
 fi
 
-if nuv -wsk action invoke python/mongodb -r| grep world
+if ops -wsk action invoke python/mongodb -r| grep world
 then echo SUCCESS PYTHON FERRETDB;
 else echo FAIL PYTHON FERRETDB; exit 1
 fi
 
-if nuv -wsk action invoke python/postgres -r| grep 'Nuvolaris Postgres is up and running!'
+if ops -wsk action invoke python/postgres -r| grep 'Nuvolaris Postgres is up and running!'
 then echo SUCCESS PYTHON POSTGRES;
 else echo FAIL PYTHON POSTGRES; exit 1
 fi
 
-if nuv -wsk action invoke python/minio -r| grep "$user-data"
+if ops -wsk action invoke python/minio -r| grep "$user-data"
 then echo SUCCESS PYTHON MINIO; exit 0
 else echo FAIL PYTHON MINIO; exit 1
 fi

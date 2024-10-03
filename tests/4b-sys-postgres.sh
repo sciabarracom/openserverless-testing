@@ -17,7 +17,7 @@
 # under the License.
 
 ops config enable --postgres
-ops -update apply
+ops update apply
 ops setup nuvolaris wait-cm JSONPATH='{.metadata.annotations.postgres_url}'
 
 if ! ops config status | grep NUVOLARIS_POSTGRES=true
