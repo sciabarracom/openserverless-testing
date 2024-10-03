@@ -59,6 +59,7 @@ jobs:
       - name: Install ops
         run: |
           curl -sL bit.ly/get-ops | bash
+          ops -info
           ops -t
       - name: Load secret
         uses: 1password/load-secrets-action@v2
