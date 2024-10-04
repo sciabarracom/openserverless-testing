@@ -18,7 +18,7 @@
 TYPE="${1:?test type}"
 TYPE="$(echo $TYPE | awk -F- '{print $1}')"
 
-if ops config status | grep NUVOLARIS_MONGODB=true; then
+if ops config status | grep OPERATOR_COMPONENT_MONGODB=true; then
     echo "MONGODB ENABLED"
 else
     echo "MONGODB DISABLED - SKIPPING"

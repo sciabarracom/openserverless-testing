@@ -23,22 +23,22 @@ password=$(ops -random --str 12)
 user="demouser"
 
 ENABLE_REDIS=""
-if ops config status | grep NUVOLARIS_REDIS=true; then
+if ops config status | grep OPERATOR_COMPONENT_REDIS=true; then
     ENABLE_REDIS="--redis"
 fi
 
 ENABLE_MONGODB=""
-if ops config status | grep NUVOLARIS_MONGODB=true; then
+if ops config status | grep OPERATOR_COMPONENT_MONGODB=true; then
     ENABLE_MONGODB="--mongodb"
 fi
 
 ENABLE_MINIO=""
-if ops config status | grep NUVOLARIS_MINIO=true; then
+if ops config status | grep OPERATOR_COMPONENT_MINIO=true; then
     ENABLE_MINIO="--minio"
 fi
 
 ENABLE_POSTGRES=""
-if ops config status | grep NUVOLARIS_POSTGRES=true; then
+if ops config status | grep OPERATOR_COMPONENT_POSTGRES=true; then
     ENABLE_POSTGRES="--postgres"
 fi
 
