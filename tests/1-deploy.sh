@@ -65,6 +65,7 @@ k3s)
     # install openserverless
     ops config apihost auto --protocol=http
     ops setup server $(cat _ip) ubuntu --uninstall
+    sleep 10
     ops setup server $(cat _ip) ubuntu
     ;;
 mk8s)
