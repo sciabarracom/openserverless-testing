@@ -41,12 +41,12 @@ else
 	ops config reset
 	# configure
 	task aws:vm:config
-	nuv config apihost $rn.$TYPE.nuvtest.net --tls $EMAIL
+	ops config apihost $rn.$TYPE.nuvtest.net --tls $EMAIL
 	ops -update apply
 fi
 
 # check we have https
-if nuv debug status | grep "apihost: https://"; then
+if ops debug status | grep "apihost: https://"; then
 	echo SUCCESS
 	exit 0
 else

@@ -75,8 +75,8 @@ MINIO_ACCESS_KEY=$(ops -config MINIO_ACCESS_KEY)
 MINIO_SECRET_KEY=$(ops -config MINIO_SECRET_KEY)
 MINIO_HOST=$(ops -config MINIO_HOST)
 MINIO_PORT=$(ops -config MINIO_PORT)
-MINIO_DATA_BUCKET=$(nuv -config MINIO_DATA_BUCKET)
-MINIO_STATIC_BUCKET=$(nuv -config MINIO_STATIC_BUCKET)
+MINIO_DATA_BUCKET=$(ops -config MINIO_DATA_BUCKET)
+MINIO_STATIC_BUCKET=$(ops -config MINIO_STATIC_BUCKET)
 
 if [[ -z "$MINIO_ACCESS_KEY" ]]; then
     echo FAIL USER MINIO_ACCESS_KEY
@@ -85,7 +85,7 @@ else
     echo SUCCESS USER MINIO_ACCESS_KEY
 fi
 
-if nuv -wsk action invoke hello/minio -p minio_access "$MINIO_ACCESS_KEY" \
+if ops -wsk action invoke hello/minio -p minio_access "$MINIO_ACCESS_KEY" \
     -p minio_secret "$MINIO_SECRET_KEY" \
     -p minio_host "$MINIO_HOST" \
     -p minio_port "$MINIO_PORT" \
