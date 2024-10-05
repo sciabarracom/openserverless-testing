@@ -44,12 +44,12 @@ case "$TYPE" in
     ;;    
 esac
 
-export MINIO_ACCESS_KEY=$(ops -config MINIO_ACCESS_KEY)
-export MINIO_SECRET_KEY=$(ops -config MINIO_SECRET_KEY)
-export MINIO_HOST=$(ops -config MINIO_HOST)
-export MINIO_PORT=$(ops -config MINIO_PORT)
-export MINIO_DATA_BUCKET=$(ops -config MINIO_DATA_BUCKET)
-export MINIO_STATIC_BUCKET=$(ops -config MINIO_STATIC_BUCKET)
+export S3_ACCESS_KEY=$(ops -config S3_ACCESS_KEY)
+export S3_SECRET_KEY=$(ops -config S3_SECRET_KEY)
+export S3_HOST=$(ops -config S3_HOST)
+export S3_PORT=$(ops -config S3_PORT)
+export S3_BUCKET_DATA=$(ops -config S3_BUCKET_DATA)
+export S3_BUCKET_STATIC=$(ops -config S3_BUCKET_STATIC)
 export REDIS_URL=$(ops -config REDIS_URL)
 export REDIS_PREFIX=$(ops -config REDIS_PREFIX)
 export MONGODB_URL=$(ops -config MONGODB_URL)
