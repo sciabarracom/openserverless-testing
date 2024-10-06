@@ -59,7 +59,7 @@ k3s)
         # TODO: fix this
         # task aws:vm:config
         # ops cloud aws vm-create k3s-test
-        # ops cloud aws zone-update k3s.nuvtest.net --wildcard --vm=k3s-test
+        # ops cloud aws zone-update k3s.opsv.xyz --wildcard --vm=k3s-test
         # ops cloud aws vm-getip k3s-test >_ip
     fi
     # install openserverless
@@ -73,12 +73,12 @@ mk8s)
     # create vm with mk8s
     if test -n "$MK8S_IP"
     then 
-          ops config apihost api.mk8s.nuvtest.net
+          ops config apihost api.mk8ss.opsv.xyz
           ops cloud mk8s kubeconfig "$MK8S_IP" ubuntu
     else
         task aws:vm:config
         ops cloud aws vm-create mk8s-test
-        ops cloud aws zone-update mk8s.nuvtest.net --wildcard --vm=mk8s-test
+        ops cloud aws zone-update mk8ss.opsv.xyz --wildcard --vm=mk8s-test
         ops cloud aws vm-getip mk8s-test >_ip
         ops cloud mk8s create "$(cat _ip)" ubuntu
         ops cloud mk8s kubeconfig "$(cat _ip)" ubuntu
@@ -94,7 +94,7 @@ eks)
     then
         mkdir -p ~/.kube
         echo $EKS_KUBECONFIG_B64 | base64 -d >~/.kube/config
-        ops config apihost api.eks.nuvtest.net
+        ops config apihost api.eks.opsv.xyz
         ops config use 0
     else
         task aws:config
@@ -102,9 +102,9 @@ eks)
         ops cloud eks create
         ops cloud eks kubeconfig
         ops cloud eks lb >_cname
-        ops cloud aws zone-update eks.nuvtest.net --wildcard --cname=$(cat _cname)
+        ops cloud aws zone-update eks.opsv.xyz --wildcard --cname=$(cat _cname)
         # on eks we need to setup an initial apihost resolving the NLB hostname
-        ops config apihost api.eks.nuvtest.net
+        ops config apihost api.eks.opsv.xyz
     fi
     # install cluster
     ops debug defin
@@ -119,14 +119,14 @@ aks)
         mkdir -p ~/.kube
         echo $AKS_KUBECONFIG_B64 | base64 -d >~/.kube/config
         ops config use 0
-        ops config apihost api.aks.nuvtest.net
+        ops config apihost api.aks.opsv.xyz
     else
         task aks:config
         ops cloud aks create
         ops cloud aks kubeconfig
         task aws:config
         IP=$(ops cloud aks lb)
-        ops cloud aws zone-update aks.nuvtest.net --wildcard --ip $IP
+        ops cloud aws zone-update aks.opsv.xyz --wildcard --ip $IP
     fi
     # install cluster
     ops debug defin
@@ -144,13 +144,13 @@ gke)
         gcloud container clusters get-credentials nuvolaris-testing --project nuvolaris-testing --region=us-east1
         
         ops config use 0
-        ops config apihost api.gke.nuvtest.net
+        ops config apihost api.gke.opsv.xyz
     else
         task gcp:vm:config
         task aws:vm:config
         ops cloud gke create
         ops cloud gke kubeconfig
-        ops cloud aws zone-update gke.nuvtest.net --wildcard --ip $(ops cloud gke lb)
+        ops cloud aws zone-update gke.opsv.xyz --wildcard --ip $(ops cloud gke lb)
     fi
     # install cluster
     ops debug defin
@@ -166,7 +166,7 @@ osh)
         mkdir -p ~/.kube
         echo $OPENSHIFT_KUBECONFIG_B64 | base64 -d >~/.kube/config
         ops config use 0
-        ops config apihost api.apps.nuvolaris-testing.oshgcp.nuvtest.net
+        ops config apihost api.apps.nuvolaris-testing.oshgcp.opsv.xyz
     else
         task osh:create
         ops cloud osh import conf/gcp/auth/kubeconfig
