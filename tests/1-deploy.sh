@@ -73,12 +73,12 @@ mk8s)
     # create vm with mk8s
     if test -n "$MK8S_IP"
     then 
-          ops config apihost api.mk8ss.opsv.xyz
+          ops config apihost api.mk8s.opsv.xyz
           ops cloud mk8s kubeconfig "$MK8S_IP" ubuntu
     else
         task aws:vm:config
         ops cloud aws vm-create mk8s-test
-        ops cloud aws zone-update mk8ss.opsv.xyz --wildcard --vm=mk8s-test
+        ops cloud aws zone-update mk8s.opsv.xyz --wildcard --vm=mk8s-test
         ops cloud aws vm-getip mk8s-test >_ip
         ops cloud mk8s create "$(cat _ip)" ubuntu
         ops cloud mk8s kubeconfig "$(cat _ip)" ubuntu
