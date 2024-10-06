@@ -22,11 +22,11 @@ packages:
       redis_prefix: ${REDIS_PREFIX}
       mongodb_url: ${MONGODB_URL}
       postgres_url: ${POSTGRES_URL}
-      minio_access: ${MINIO_ACCESS_KEY}
-      minio_secret: ${MINIO_SECRET_KEY}
-      minio_host: ${MINIO_HOST}
-      minio_port: ${MINIO_PORT}
-      minio_data: ${MINIO_DATA_BUCKET}
+      s3_access: ${S3_ACCESS_KEY}
+      s3_secret: ${S3_SECRET_KEY}
+      s3_host: ${S3_HOST}
+      s3_port: ${S3_PORT}
+      s3_data: ${S3_BUCKET_DATA}
     actions:
       hello:
         function: javascript/hello.js
@@ -45,11 +45,11 @@ packages:
       mongodb_url: ${MONGODB_URL}
       mongodb_db: ${MONGODB_DB}
       postgres_url: ${POSTGRES_URL}
-      minio_access: ${MINIO_ACCESS_KEY}
-      minio_secret: ${MINIO_SECRET_KEY}
-      minio_host: ${MINIO_HOST}
-      minio_port: ${MINIO_PORT}
-      minio_data: ${MINIO_DATA_BUCKET}
+      s3_access: ${S3_ACCESS_KEY}
+      s3_secret: ${S3_SECRET_KEY}
+      s3_host: ${S3_HOST}
+      s3_port: ${S3_PORT}
+      s3_data: ${S3_BUCKET_DATA}
     actions:
       hello:
         function: python/hello.py
