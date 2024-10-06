@@ -64,9 +64,9 @@ k3s)
     fi
     # install openserverless
     ops config apihost auto --protocol=http
-    ops setup server $(cat _ip) ubuntu --uninstall
+    ops setup server "$(cat _ip)" ubuntu --uninstall
     sleep 10
-    ops setup server $(cat _ip) ubuntu
+    ops setup server "$(cat _ip)" ubuntu
     ;;
 mk8s)
     ops config reset
@@ -74,14 +74,14 @@ mk8s)
     if test -n "$MK8S_IP"
     then 
           ops config apihost api.mk8s.nuvtest.net
-          ops cloud mk8s kubeconfig SERVER=$MK8S_IP USERNAME=ubuntu
+          ops cloud mk8s kubeconfig "$MK8S_IP" ubuntu
     else
         task aws:vm:config
         ops cloud aws vm-create mk8s-test
         ops cloud aws zone-update mk8s.nuvtest.net --wildcard --vm=mk8s-test
         ops cloud aws vm-getip mk8s-test >_ip
-        ops cloud mk8s create SERVER=$(cat _ip) USERNAME=ubuntu
-        ops cloud mk8s kubeconfig SERVER=$(cat _ip) USERNAME=ubuntu
+        ops cloud mk8s create "$(cat _ip)" ubuntu
+        ops cloud mk8s kubeconfig "$(cat _ip)" ubuntu
     fi
     # install cluster
     ops setup cluster --uninstall
