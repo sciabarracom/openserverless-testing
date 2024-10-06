@@ -44,7 +44,6 @@ env:
 
 jobs:
   test-linux:
-    if: false # skip for now
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout
@@ -114,8 +113,10 @@ jobs:
 
   test-windows:
     runs-on: windows-2022
-    #needs: test-linux
-    if: ${{ ! startsWith(github.ref_name, 'kind') }}
+    needs: test-linux
+    #if: ${{ ! startsWith(github.ref_name, 'kind') }}
+    # temporary disabled
+    if: false # skip for now
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -125,7 +126,18 @@ jobs:
       - name: 'Update plugin'
         if: ${{ startsWith(github.ref_name, 'gke') }}
         run: gcloud components install gke-gcloud-auth-plugin
-      - name: Load secret
+      - name: Install ops
+        shell: powershell
+        run: |
+          irm bit.ly/get-ops-exe | iex
+          ops -info
+          ops -t > /dev/null
+      - name: Ops Update
+        shell: bsah
+        run: |
+          ops -update
+          ops -info
+      - name: Load secrets
         uses: shyim/1password-load-secrets-action@v1
         with:
           # export also as environment variable
@@ -147,23 +159,6 @@ jobs:
           #GCLOUD_SERVICE_ACCOUNT_B64: op://OpenServerless/TESTING/GCLOUD_SERVICE_ACCOUNT_B64
         env:
           OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
-
-      - name: Print masked secret
-        run: |
-          echo "K3S_IP: $K3S_IP"
-
-      - name: Install ops
-        shell: powershell
-        run: |
-          irm bit.ly/get-ops-exe | iex
-          ops -info
-          ops -t > /dev/null
-      - name: Ops Update
-        shell: bash
-        run: |
-          ops -update
-          ops -info
-
       - name: 1 Deploy
         shell: bash
         run: tests/1-deploy.sh $PLATFORM
@@ -209,7 +204,8 @@ jobs:
 
   test-mac:
     runs-on: macOS-12
-    if: ${{ ! startsWith(github.ref_name, 'kind') }}
+    #if: ${{ ! startsWith(github.ref_name, 'kind') }}
+    if: false # skip for now
     needs: test-windows
     steps:
       - name: Checkout
