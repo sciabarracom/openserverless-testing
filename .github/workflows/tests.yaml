@@ -29,7 +29,7 @@ env:
   #K3S_IP: ${{ secrets.K3S_IP }}
   #MK8S_IP: ${{ secrets.MK8S_IP }}
   #ID_RSA_B64: ${{ secrets.ID_RSA_B64 }}
-  AKS_KUBECONFIG_B64: ${{ secrets.AKS_KUBECONFIG_B64 }}
+  #AKS_KUBECONFIG_B64: ${{ secrets.AKS_KUBECONFIG_B64 }}
   EKS_KUBECONFIG_B64: ${{ secrets.EKS_KUBECONFIG_B64 }}
   GKE_KUBECONFIG_B64: ${{ secrets.GKE_KUBECONFIG_B64 }}
   OPENSHIFT_KUBECONFIG_B64: ${{ secrets.OPENSHIFT_KUBECONFIG_B64 }}
@@ -72,7 +72,7 @@ jobs:
           K3S_IP: op://OpenServerless/TESTING/K3S_IP
           MK8S_IP: op://OpenServerless/TESTING/MK8S_IP
           ID_RSA_B64: op://OpenServerless/TESTING/ID_RSA_B64
-          #AKS_KUBECONFIG_B64: op://OpenServerless/TESTING/AKS_KUBECONFIG_B64
+          AKS_KUBECONFIG_B64: op://OpenServerless/TESTING/AKS_KUBECONFIG_B64
           #EKS_KUBECONFIG_B64: op://OpenServerless/TESTING/EKS_KUBECONFIG_B64
           #GKE_KUBECONFIG_B64: op://OpenServerless/TESTING/GKE_KUBECONFIG_B64
           #OPENSHIFT_KUBECONFIG_B64: op://OpenServerless/TESTING/OPENSHIFT_KUBECONFIG_B64

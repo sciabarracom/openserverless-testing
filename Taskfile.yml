@@ -137,8 +137,8 @@ tasks:
   aks:create:
     cmds:
     - task azure:cluster:create
-    - nuv cloud aks lb >_ip
-    - nuv cloud aws zone-update aks.opsv.xyz --wildcard --ip $(cat _ip)
+    - ops cloud aks lb >_ip
+    - ops cloud aws zone-update aks.opsv.xyz --wildcard --ip $(cat _ip)
   
   aks:delete:
     cmds:
