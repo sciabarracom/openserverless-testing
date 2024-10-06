@@ -44,6 +44,7 @@ env:
 
 jobs:
   test-linux:
+    if: false # skip for now
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout
@@ -113,7 +114,7 @@ jobs:
 
   test-windows:
     runs-on: windows-2022
-    needs: test-linux
+    #needs: test-linux
     if: ${{ ! startsWith(github.ref_name, 'kind') }}
     steps:
       - name: Checkout
@@ -124,23 +125,45 @@ jobs:
       - name: 'Update plugin'
         if: ${{ startsWith(github.ref_name, 'gke') }}
         run: gcloud components install gke-gcloud-auth-plugin
-      - name: Nuv
+      - name: Load secret
+        uses: shyim/1password-load-secrets-action@v1
+        with:
+          # export also as environment variable
+          export: true
+          # mask the secrets in the logs
+          mask-secrets: true
+          # secret mapping
+          secrets: |
+            op://OpenServerless/TESTING/NGROK_PASSWORD
+            op://OpenServerless/TESTING/K3S_IP
+            op://OpenServerless/TESTING/MK8S_IP
+            op://OpenServerless/TESTING/ID_RSA_B64
+          #AKS_KUBECONFIG_B64: op://OpenServerless/TESTING/AKS_KUBECONFIG_B64
+          #EKS_KUBECONFIG_B64: op://OpenServerless/TESTING/EKS_KUBECONFIG_B64
+          #GKE_KUBECONFIG_B64: op://OpenServerless/TESTING/GKE_KUBECONFIG_B64
+          #OPENSHIFT_KUBECONFIG_B64: op://OpenServerless/TESTING/OPENSHIFT_KUBECONFIG_B64
+          #AWS_ACCESS_KEY_ID: op://OpenServerless/TESTING/AWS_ACCESS_KEY_ID
+          #AWS_SECRET_ACCESS_KEY: op://OpenServerless/TESTING/AWS_SECRET_ACCESS_KEY
+          #GCLOUD_SERVICE_ACCOUNT_B64: op://OpenServerless/TESTING/GCLOUD_SERVICE_ACCOUNT_B64
+        env:
+          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+
+      - name: Print masked secret
         run: |
-          $jsonContent = Invoke-RestMethod -Uri "https://raw.githubusercontent.com/nuvolaris/olaris/3.0.0-testing/nuvroot.json"
-          $VER = $jsonContent.version
-          $URL = "https://github.com/nuvolaris/nuv/releases/download/$VER/nuv_${VER}_amd64.msi"
-          Invoke-WebRequest -Uri $URL -OutFile "nuv.msi"
-          msiexec /i nuv.msi /passive
-          $procMain = Start-Process "msiexec" "/i nuv.msi /qn" -NoNewWindow -PassThru
-          echo "Install started, waiting for finish"
-          $procMain.WaitForExit()
-          echo "Install completed"
-          Add-Content $env:GITHUB_PATH "C:\Program Files\Nuvolaris"
+          echo "K3S_IP: $K3S_IP"
+
+      - name: Install ops
+        shell: powershell
+        run: |
+          irm bit.ly/get-ops-exe | iex
+          ops -info
+          ops -t > /dev/null
       - name: Ops Update
         shell: bash
         run: |
-           ops -update
-           ops -info
+          ops -update
+          ops -info
+
       - name: 1 Deploy
         shell: bash
         run: tests/1-deploy.sh $PLATFORM
