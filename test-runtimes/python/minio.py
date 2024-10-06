@@ -21,9 +21,9 @@ from botocore.client import Config
 def main(args):
     buckets = []
     s3 = boto3.resource('s3',
-                    endpoint_url=f"http://{args.get('minio_host')}:{args.get('minio_port')}",
-                    aws_access_key_id=args.get("minio_access"),
-                    aws_secret_access_key=args.get("minio_secret"),
+                    endpoint_url=f"http://{args.get('s3_host')}:{args.get('s3_port')}",
+                    aws_access_key_id=args.get("s3_access"),
+                    aws_secret_access_key=args.get("s3_secret"),
                     config=Config(signature_version='s3v4'),
                     region_name='us-east-1')
                                                                                                                                                                               

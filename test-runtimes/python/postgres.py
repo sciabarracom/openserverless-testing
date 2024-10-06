@@ -25,6 +25,9 @@ def main(args):
 
         # Open a cursor to perform database operations
         with conn.cursor() as cur:
+            cur.execute("""CREATE SCHEMA IF NOT EXISTS nuvolaris;
+            SET search_path TO nuvolaris;
+            """)
 
             # Execute a command: this creates a new table
             cur.execute("""
@@ -43,6 +46,10 @@ def main(args):
             # Query the database and obtain data as Python objects.
             cur.execute("SELECT message FROM nuvolaris_table")
             record = cur.fetchone()[0]
+
+            cur.execute("DROP table nuvolaris_table")
+            cur.execute("DROP SCHEMA nuvolaris CASCADE")
+
             response["body"] = record
             conn.commit()
 
