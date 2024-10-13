@@ -10,12 +10,26 @@ ops cloud azcloud vm-create mk8s-test
 ops cloud azcloud vm-list
 #! see the vm
 
+# Dns
+## k3s
+ops cloud azcloud zone-update opsv.xyz --host=mk8s --vm=mk8s-test
+ops cloud azcloud zone-update opsv.xyz --host="*.mk8s" --cname=mk8s.opsv.xyz
 
-ops config storage --class=auto --provisioner=auto
-ops config apihost auto --protocol=http
+## mk8s
+ops cloud azcloud zone-update opsv.xyz --host="*.k3s" --cname=k3s.opsv.xyz
+ops cloud azcloud zone-update opsv.xyz --host=k3s --vm=k3s-test
+
+## aks
+ops cloud aks lb <- retrieve the ip
+ops cloud azcloud zone-update opsv.xyz --host=aks --ip=<put the ip here>
+ops cloud azcloud zone-update opsv.xyz --host="*.aks" --cname=aks.opsv.xyz
 
 # Install k3s
+ops config reset
 KIP=$(ops cloud azcloud vm-getip k3s-test)
 ops setup server $KIP ubuntu
 
-ops config use
+# Install mk8s
+ops config reset
+KIP=$(ops cloud azcloud vm-getip k8s-test)
+ops setup cluster
