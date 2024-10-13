@@ -119,6 +119,7 @@ aks)
         mkdir -p ~/.kube
         echo $AKS_KUBECONFIG_B64 | base64 -d >~/.kube/config
         ops config use 0
+        ops config apihost auto --protocol=http
         ops config apihost api.aks.opsv.xyz
     else
         task aks:config

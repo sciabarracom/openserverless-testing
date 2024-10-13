@@ -18,7 +18,7 @@
 TYPE="${1:?test type}"
 TYPE="$(echo $TYPE | awk -F- '{print $1}')"
 
-if ops config status | grep NUVOLARIS_REDIS=true; then
+if ops config status | grep OPERATOR_COMPONENT_REDIS=true; then
     echo "REDIS ENABLED"
 else
     echo "REDIS DISABLED - SKIPPING"

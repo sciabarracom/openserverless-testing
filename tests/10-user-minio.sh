@@ -18,7 +18,7 @@
 TYPE="${1:?test type}"
 TYPE="$(echo $TYPE | awk -F- '{print $1}')"
 
-if ops config status | grep NUVOLARIS_MINIO=true; then
+if ops config status | grep OPERATOR_COMPONENT_MINIO=true; then
     echo "MINIO ENABLED"
 else
     echo "MINIO DISABLED - SKIPPING"
@@ -71,12 +71,12 @@ else
     exit 1
 fi
 
-MINIO_ACCESS_KEY=$(ops -config MINIO_ACCESS_KEY)
-MINIO_SECRET_KEY=$(ops -config MINIO_SECRET_KEY)
-MINIO_HOST=$(ops -config MINIO_HOST)
-MINIO_PORT=$(ops -config MINIO_PORT)
-MINIO_DATA_BUCKET=$(ops -config MINIO_DATA_BUCKET)
-MINIO_STATIC_BUCKET=$(ops -config MINIO_STATIC_BUCKET)
+S3_ACCESS_KEY=$(ops -config S3_ACCESS_KEY)
+S3_SECRET_KEY=$(ops -config S3_SECRET_KEY)
+S3_HOST=$(ops -config S3_HOST)
+S3_PORT=$(ops -config S3_PORT)
+S3_BUCKET_DATA=$(ops -config S3_BUCKET_DATA)
+S3_BUCKET_STATIC=$(ops -config S3_BUCKET_STATIC)
 
 if [[ -z "$MINIO_ACCESS_KEY" ]]; then
     echo FAIL USER MINIO_ACCESS_KEY
@@ -85,11 +85,11 @@ else
     echo SUCCESS USER MINIO_ACCESS_KEY
 fi
 
-if ops -wsk action invoke hello/minio -p minio_access "$MINIO_ACCESS_KEY" \
-    -p minio_secret "$MINIO_SECRET_KEY" \
-    -p minio_host "$MINIO_HOST" \
-    -p minio_port "$MINIO_PORT" \
-    -p minio_data "$MINIO_DATA_BUCKET" -r | grep "$user-data"; then
+if ops -wsk action invoke hello/minio -p minio_access "$S3_ACCESS_KEY" \
+    -p s3_secret "S3_SECRET_KEY" \
+    -p s3_host "$S3_HOST" \
+    -p s3_port "$S3_PORT" \
+    -p s3_data "$S3_BUCKET_DATA" -r | grep "$user-data"; then
     echo SUCCESS
     exit 0
 else

@@ -236,8 +236,6 @@ tasks:
       gh pr create --title="Tentative merge for $TASKS" --body "Merge this if all [*-$OLARIS](https://github.com/apache/openserverless-testing/actions) tests succeed."
     - task d k m e a g
 
-
-
   tag-test-ci: |
     git tag {{.TAG}}
     git push origin --tags  
