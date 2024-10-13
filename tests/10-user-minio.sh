@@ -29,7 +29,7 @@ user="demominiouser"
 password=$(ops -random --str 12)
 
 if ops admin adduser $user $user@email.com $password --minio | grep "whiskuser.nuvolaris.org/$user created"; then
-    echo SUCCESS CREATING $user
+    echo SUCCESS CREATING $user $password
 else
     echo FAIL CREATING $user
     exit 1
@@ -39,7 +39,7 @@ ops util kube waitfor FOR=condition=ready OBJ="wsku/$user" TIMEOUT=120
 
 case "$TYPE" in
 kind)
-    if OPS_USER=$user OPS_PASSWORD=$password ops -login http://localhost:3233 | grep "Successfully logged in as $user."; then
+    if OPS_USER=$user OPS_PASSWORD=$password ops -login http://localhost:80 | grep "Successfully logged in as $user."; then
         echo SUCCESS LOGIN
     else
         echo FAIL LOGIN
@@ -60,14 +60,14 @@ esac
 if ops setup nuvolaris minio | grep hello; then
     echo SUCCESS SETUP MINIO ACTION
 else
-    echo FAIL
+    echo FAIL SETUP ACTION MINIO
     exit 1
 fi
 
 if ops -wsk action list | grep "/$user/hello/minio"; then
     echo SUCCESS USER MINIO ACTION LIST
 else
-    echo FAIL
+    echo FAIL USER MINIO ACTION LIST
     exit 1
 fi
 
@@ -78,21 +78,21 @@ S3_PORT=$(ops -config S3_PORT)
 S3_BUCKET_DATA=$(ops -config S3_BUCKET_DATA)
 S3_BUCKET_STATIC=$(ops -config S3_BUCKET_STATIC)
 
-if [[ -z "$MINIO_ACCESS_KEY" ]]; then
-    echo FAIL USER MINIO_ACCESS_KEY
+if [[ -z "$S3_ACCESS_KEY" ]]; then
+    echo FAIL USER S3_ACCESS_KEY
     exit 1
 else
-    echo SUCCESS USER MINIO_ACCESS_KEY
+    echo SUCCESS USER S3_ACCESS_KEY
 fi
 
-if ops -wsk action invoke hello/minio -p minio_access "$S3_ACCESS_KEY" \
-    -p s3_secret "S3_SECRET_KEY" \
+if ops -wsk action invoke hello/minio -p s3_access "$S3_ACCESS_KEY" \
+    -p s3_secret "$S3_SECRET_KEY" \
     -p s3_host "$S3_HOST" \
     -p s3_port "$S3_PORT" \
     -p s3_data "$S3_BUCKET_DATA" -r | grep "$user-data"; then
     echo SUCCESS
     exit 0
 else
-    echo FAIL
+    echo FAIL ACTION INVOKE
     exit 1
 fi
