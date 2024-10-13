@@ -30,16 +30,57 @@ then echo "Please set 'NGROK_PASSWORD'"
      exit 1
 fi
 
+# Determine OS and architecture
+OS=$(uname -s)
+ARCH=$(uname -m)
+
 echo "### Install ngrok ###"
-if ! test -e ./ngrok
-then
-  wget -q https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz
-  tar xzvf ngrok-v3-stable-linux-amd64.tgz
-  chmod +x ./ngrok
+# Set the download URL based on OS and architecture
+if [ "$OS" = "Linux" ]; then
+  if [ "$ARCH" = "x86_64" ]; then
+    NGROK_URL="https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz"
+  elif [ "$ARCH" = "aarch64" ]; then
+    NGROK_URL="https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-arm64.tgz"
+  else
+    echo "Unsupported Linux architecture: $ARCH"
+    exit 1
+  fi
+elif [ "$OS" = "Darwin" ]; then
+  if [ "$ARCH" = "x86_64" ]; then
+    NGROK_URL="https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-darwin-amd64.tgz"
+  elif [ "$ARCH" = "arm64" ]; then
+    NGROK_URL="https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-darwin-arm64.tgz"
+  else
+    echo "Unsupported macOS architecture: $ARCH"
+    exit 1
+  fi
+else
+  echo "Unsupported OS: $OS"
+  exit 1
 fi
 
-echo "### Update user: $USER password ###"
-echo -e "$NGROK_PASSWORD\n$NGROK_PASSWORD" | sudo passwd "$USER"
+# Download and install ngrok if not already present
+if ! test -e ./ngrok; then
+  echo "Downloading ngrok from $NGROK_URL"
+  wget -q $NGROK_URL -O ngrok.tgz
+  tar xzvf ngrok.tgz
+  chmod +x ./ngrok
+  rm ngrok.tgz
+else
+  echo "ngrok already installed"
+fi
+
+#echo "### Update user: $USER password ###"
+#if [ "$OS" = "Linux" ]; then
+#  echo -e "$NGROK_PASSWORD\n$NGROK_PASSWORD" | sudo passwd "$USER"
+#elif [ "$OS" = "Darwin" ]; then
+#
+#fi
+echo "### Adding ssh key to user ###"
+mkdir -p ~/.ssh && chmod 700 ~/.ssh
+touch ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys
+echo "$SSH_KEY" >> ~/.ssh/authorized_keys
+cat ~/.ssh/authorized_keys
 
 echo "### Start ngrok proxy for 22 port ###"
 

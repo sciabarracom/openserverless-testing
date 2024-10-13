@@ -37,7 +37,7 @@ env:
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   GCLOUD_SERVICE_ACCOUNT_B64: ${{ secrets.GCLOUD_SERVICE_ACCOUNT_B64 }}
   USE_GKE_GCLOUD_AUTH_PLUGIN: "True"
-  OPS_REPO: http://github.com/d4rkstar/openserverless-task
+  OPS_REPO: https://github.com/d4rkstar/openserverless-task
   OPS_BRANCH: main
   NGROK_TOKEN: ${{ secrets.NGROK_TOKEN }}
   #NGROK_PASSWORD: ${{ secrets.NGROK_PASSWORD }}
@@ -58,7 +58,7 @@ jobs:
         if: ${{ startsWith(github.ref_name, 'gke') }}
       - name: Install ops
         run: |
-          curl -sL bit.ly/get-ops | bash
+          curl -sL bit.ly/get-ops | bash          
           ops -info
           ops -t > /dev/null
       - name: Load secret
@@ -68,6 +68,7 @@ jobs:
           export-env: true
         env:
           OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+          SSH_KEY: op://OpenServerless/ops_testing_ssh/public key
           NGROK_PASSWORD: op://OpenServerless/TESTING/NGROK_PASSWORD
           K3S_IP: op://OpenServerless/TESTING/K3S_IP
           MK8S_IP: op://OpenServerless/TESTING/MK8S_IP
@@ -203,33 +204,57 @@ jobs:
         run: tests/14-runtime-testing.sh $PLATFORM
 
   test-mac:
-    runs-on: macOS-12
-    #if: ${{ ! startsWith(github.ref_name, 'kind') }}
-    if: false # skip for now
-    needs: test-windows
+    runs-on: macOS-14
+    defaults:
+      run:
+        shell: bash
+    if: ${{ ! startsWith(github.ref_name, 'kind') }}
+    #if: false # skip for now
+    needs: test-linux
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: 'Set up Cloud SDK'
         uses: 'google-github-actions/setup-gcloud@v1'
         if: ${{ startsWith(github.ref_name, 'gke') }}
       - name: 'Update plugin'
         if: ${{ startsWith(github.ref_name, 'gke') }}
         run: gcloud components install gke-gcloud-auth-plugin
-      - name: Nuv
+      - name: Install ops
         run: |
-          VER="$(curl https://raw.githubusercontent.com/nuvolaris/olaris/3.0.0-testing/nuvroot.json | jq .version -r)"
-          URL="https://github.com/nuvolaris/nuv/releases/download/$VER/nuv_${VER}_amd64.pkg"
-          curl --progress-bar -L $URL >nuv.pkg
-          sudo installer -target / -pkg nuv.pkg
-          nuv -update
-          nuv -info
-      - name: 1 Deploy
-        run: tests/1-deploy.sh $PLATFORM
+          curl -sL bit.ly/get-ops | /bin/bash
+          source ~/.bashrc
+          ops -info
+          ops -t > /dev/null
+          OPS_BIN_PATH=$(ops -i | grep "OPS_HOME" | awk -v FS=: '{print $2}' | tr -d " ")/bin
+          echo "PATH=$OPS_BIN_PATH:$PATH" >> $GITHUB_ENV
+      - name: Load secret
+        uses: 1password/load-secrets-action@v2
+        with:
+          # Export loaded secrets as environment variables
+          export-env: true
+        env:
+          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+          SSH_KEY: op://OpenServerless/ops_testing_ssh/public key
+          NGROK_PASSWORD: op://OpenServerless/TESTING/NGROK_PASSWORD
+          K3S_IP: op://OpenServerless/TESTING/K3S_IP
+          MK8S_IP: op://OpenServerless/TESTING/MK8S_IP
+          ID_RSA_B64: op://OpenServerless/TESTING/ID_RSA_B64
+          AKS_KUBECONFIG_B64: op://OpenServerless/TESTING/AKS_KUBECONFIG_B64
+          #EKS_KUBECONFIG_B64: op://OpenServerless/TESTING/EKS_KUBECONFIG_B64
+          #GKE_KUBECONFIG_B64: op://OpenServerless/TESTING/GKE_KUBECONFIG_B64
+          #OPENSHIFT_KUBECONFIG_B64: op://OpenServerless/TESTING/OPENSHIFT_KUBECONFIG_B64
+          #AWS_ACCESS_KEY_ID: op://OpenServerless/TESTING/AWS_ACCESS_KEY_ID
+          #AWS_SECRET_ACCESS_KEY: op://OpenServerless/TESTING/AWS_SECRET_ACCESS_KEY
+          #GCLOUD_SERVICE_ACCOUNT_B64: op://OpenServerless/TESTING/GCLOUD_SERVICE_ACCOUNT_B64
       - name: Debug Action (if requested)
-        run:  .github/debugAction.sh
+        run: .github/debugAction.sh
       - name: Wait for Debug (if requested)
         run: .github/waitIfDebug.sh
+      - name: 1 Deploy
+        run: |
+          touch .secrets
+          tests/1-deploy.sh $PLATFORM
       - name: 3 SysRedis
         run: tests/3-sys-redis.sh $PLATFORM
       - name: 4 SysMongo
