@@ -119,7 +119,7 @@ jobs:
     #needs: test-linux
     defaults:
       run:
-        shell: 'C:\Program Files\Git\bin\bash.exe -c "{0}"'
+        shell: bash
     if: ${{ ! startsWith(github.ref_name, 'kind') }}
     # temporary disabled
     #if: false # skip for now
