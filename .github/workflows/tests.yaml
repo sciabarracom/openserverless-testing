@@ -138,6 +138,8 @@ jobs:
           irm bit.ly/get-ops-exe | iex
           ops -info
           ops -t > /dev/null
+          $OPS_HOME_PATH = (ops -i | Select-String "OPS_HOME").ToString() -replace "OPS_HOME: ", ""
+          "$env:PATH=$OPS_BIN_PATH;$env:PATH" | Out-File -FilePath $env:GITHUB_ENV -Append
       - name: Ops Update
         run: |
           ops -update
