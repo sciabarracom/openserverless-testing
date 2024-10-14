@@ -30,12 +30,12 @@ env:
   #MK8S_IP: ${{ secrets.MK8S_IP }}
   #ID_RSA_B64: ${{ secrets.ID_RSA_B64 }}
   #AKS_KUBECONFIG_B64: ${{ secrets.AKS_KUBECONFIG_B64 }}
-  EKS_KUBECONFIG_B64: ${{ secrets.EKS_KUBECONFIG_B64 }}
-  GKE_KUBECONFIG_B64: ${{ secrets.GKE_KUBECONFIG_B64 }}
-  OPENSHIFT_KUBECONFIG_B64: ${{ secrets.OPENSHIFT_KUBECONFIG_B64 }}
-  AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }}
-  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  GCLOUD_SERVICE_ACCOUNT_B64: ${{ secrets.GCLOUD_SERVICE_ACCOUNT_B64 }}
+  #EKS_KUBECONFIG_B64: ${{ secrets.EKS_KUBECONFIG_B64 }}
+  #GKE_KUBECONFIG_B64: ${{ secrets.GKE_KUBECONFIG_B64 }}
+  #OPENSHIFT_KUBECONFIG_B64: ${{ secrets.OPENSHIFT_KUBECONFIG_B64 }}
+  #AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }}
+  #AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  #GCLOUD_SERVICE_ACCOUNT_B64: ${{ secrets.GCLOUD_SERVICE_ACCOUNT_B64 }}
   USE_GKE_GCLOUD_AUTH_PLUGIN: "True"
   OPS_REPO: https://github.com/d4rkstar/openserverless-task
   OPS_BRANCH: main
@@ -141,6 +141,7 @@ jobs:
           $OPS_HOME_PATH = (ops -i | Select-String "OPS_HOME").ToString() -replace "OPS_HOME: ", ""
           "$env:PATH=$OPS_BIN_PATH;$env:PATH" | Out-File -FilePath $env:GITHUB_ENV -Append
       - name: Ops Update
+        shell: powershell
         run: |
           ops -update
           ops -info
