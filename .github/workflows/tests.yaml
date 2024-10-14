@@ -26,16 +26,6 @@ on:
 
 env:
   PLATFORM: ${{ github.ref_name }}
-  #K3S_IP: ${{ secrets.K3S_IP }}
-  #MK8S_IP: ${{ secrets.MK8S_IP }}
-  #ID_RSA_B64: ${{ secrets.ID_RSA_B64 }}
-  #AKS_KUBECONFIG_B64: ${{ secrets.AKS_KUBECONFIG_B64 }}
-  EKS_KUBECONFIG_B64: ${{ secrets.EKS_KUBECONFIG_B64 }}
-  GKE_KUBECONFIG_B64: ${{ secrets.GKE_KUBECONFIG_B64 }}
-  OPENSHIFT_KUBECONFIG_B64: ${{ secrets.OPENSHIFT_KUBECONFIG_B64 }}
-  AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }}
-  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  GCLOUD_SERVICE_ACCOUNT_B64: ${{ secrets.GCLOUD_SERVICE_ACCOUNT_B64 }}
   USE_GKE_GCLOUD_AUTH_PLUGIN: "True"
   OPS_REPO: https://github.com/d4rkstar/openserverless-task
   OPS_BRANCH: main
@@ -45,6 +35,8 @@ env:
 jobs:
   test-linux:
     runs-on: ubuntu-22.04
+    # temporary disabled
+    #if: false # skip for now
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -114,30 +106,23 @@ jobs:
 
   test-windows:
     runs-on: windows-2022
+    defaults:
+      run:
+        shell: powershell
     needs: test-linux
-    #if: ${{ ! startsWith(github.ref_name, 'kind') }}
+    if: ${{ ! startsWith(github.ref_name, 'kind') }}
     # temporary disabled
-    if: false # skip for now
+    #if: false # skip for now
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+        # Install Git (which includes Git Bash)
       - name: 'Set up Cloud SDK'
         uses: 'google-github-actions/setup-gcloud@v1'
         if: ${{ startsWith(github.ref_name, 'gke') }}
       - name: 'Update plugin'
         if: ${{ startsWith(github.ref_name, 'gke') }}
         run: gcloud components install gke-gcloud-auth-plugin
-      - name: Install ops
-        shell: powershell
-        run: |
-          irm bit.ly/get-ops-exe | iex
-          ops -info
-          ops -t > /dev/null
-      - name: Ops Update
-        shell: bsah
-        run: |
-          ops -update
-          ops -info
       - name: Load secrets
         uses: shyim/1password-load-secrets-action@v1
         with:
@@ -151,6 +136,7 @@ jobs:
             op://OpenServerless/TESTING/K3S_IP
             op://OpenServerless/TESTING/MK8S_IP
             op://OpenServerless/TESTING/ID_RSA_B64
+            op://OpenServerless/TESTING/AKS_KUBECONFIG_B64
           #AKS_KUBECONFIG_B64: op://OpenServerless/TESTING/AKS_KUBECONFIG_B64
           #EKS_KUBECONFIG_B64: op://OpenServerless/TESTING/EKS_KUBECONFIG_B64
           #GKE_KUBECONFIG_B64: op://OpenServerless/TESTING/GKE_KUBECONFIG_B64
@@ -160,9 +146,31 @@ jobs:
           #GCLOUD_SERVICE_ACCOUNT_B64: op://OpenServerless/TESTING/GCLOUD_SERVICE_ACCOUNT_B64
         env:
           OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+      - name: Install ops
+        shell: powershell
+        run: |
+          irm bit.ly/get-ops-exe | iex
+      - name: Add ops to path for runner
+        shell: bash
+        run: |
+          OPS_BIN_PATH=$HOME/.local/bin/
+          echo "PATH=$OPS_BIN_PATH:$PATH" >> $GITHUB_ENV
+      - name: Check Ops
+        shell: bash
+        run: |
+          ops -info
+          ops -t > /dev/null
+      - name: Ops Update
+        shell: bash
+        run: |
+          ops -update
+          ops -info
+
       - name: 1 Deploy
         shell: bash
-        run: tests/1-deploy.sh $PLATFORM
+        run: |
+          touch .secrets
+          tests/1-deploy.sh $PLATFORM
       - name: Debug Action (if requested)
         shell: bash
         run:  .github/debugAction.sh
@@ -208,9 +216,10 @@ jobs:
     defaults:
       run:
         shell: bash
-    if: ${{ ! startsWith(github.ref_name, 'kind') }}
+    #if: ${{ ! startsWith(github.ref_name, 'kind') }}
+    # temporary disabled
     #if: false # skip for now
-    needs: test-linux
+    needs: test-windows
     steps:
       - name: Checkout
         uses: actions/checkout@v4

@@ -65,6 +65,7 @@ k3s)
     # install openserverless
     ops config apihost auto --protocol=http
     ops setup server "$(cat _ip)" ubuntu --uninstall
+    echo "waiting 10 seconds..."
     sleep 10
     ops setup server "$(cat _ip)" ubuntu
     ;;
@@ -85,6 +86,8 @@ mk8s)
     fi
     # install cluster
     ops setup cluster --uninstall
+    echo "waiting 10 seconds..."
+    sleep 10
     ops setup cluster
     ;;
 eks)
@@ -109,6 +112,8 @@ eks)
     # install cluster
     ops debug defin
     ops setup cluster --uninstall
+    echo "waiting 10 seconds..."
+    sleep 10
     ops setup cluster
     ;;
 aks)
@@ -132,6 +137,8 @@ aks)
     # install cluster
     ops debug defin
     ops setup cluster --uninstall
+    echo "waiting 10 seconds..."
+    sleep 10
     ops setup cluster
     ;;
 gke)
@@ -156,6 +163,8 @@ gke)
     # install cluster
     ops debug defin
     ops setup cluster --uninstall
+    echo "waiting 10 seconds..."
+    sleep 10
     ops setup cluster
     ;;
 
@@ -175,6 +184,8 @@ osh)
     # install cluster
     ops debug defin
     ops setup cluster --uninstall
+    echo "waiting 10 seconds..."
+    sleep 10
     ops setup cluster
     ;;
 
