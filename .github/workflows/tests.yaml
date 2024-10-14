@@ -125,7 +125,12 @@ jobs:
     #if: false # skip for now
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+        # Install Git (which includes Git Bash)
+
+      - name: Install Git
+        run: choco install git
+
       - name: 'Set up Cloud SDK'
         uses: 'google-github-actions/setup-gcloud@v1'
         if: ${{ startsWith(github.ref_name, 'gke') }}
@@ -136,12 +141,14 @@ jobs:
         shell: powershell
         run: |
           irm bit.ly/get-ops-exe | iex
+      - name: Check Ops
+        run: |
           ops -info
           ops -t > /dev/null
+          
           $OPS_HOME_PATH = (ops -i | Select-String "OPS_HOME").ToString() -replace "OPS_HOME: ", ""
           "$env:PATH=$OPS_BIN_PATH;$env:PATH" | Out-File -FilePath $env:GITHUB_ENV -Append
       - name: Ops Update
-        shell: powershell
         run: |
           ops -update
           ops -info
