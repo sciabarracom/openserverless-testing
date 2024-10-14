@@ -140,7 +140,7 @@ jobs:
       - name: Check Ops
         run: |
           ops -info
-          ops -t > /dev/null
+          ops -t
       - name: Ops Update
         run: |
           ops -update
