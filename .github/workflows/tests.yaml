@@ -137,6 +137,11 @@ jobs:
         shell: powershell
         run: |
           irm bit.ly/get-ops-exe | iex
+      - name: Add ops to path for runner
+        run: |
+          OPS_BIN_PATH=$HOME/.ops/bin
+          echo "OPS_BIN_PATH=$OPS_BIN_PATH"
+          echo "PATH=$OPS_BIN_PATH:$PATH" >> $GITHUB_ENV
       - name: Check Ops
         run: |
           ops -info
