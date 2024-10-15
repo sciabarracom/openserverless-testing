@@ -139,10 +139,9 @@ jobs:
           irm bit.ly/get-ops-exe | iex
       - name: Add ops to path for runner
         run: |
-          OPS_BIN_PATH=$HOME/.ops/bin
+          OPS_BIN_PATH=$HOME/.local/bin/
           echo "OPS_BIN_PATH=$OPS_BIN_PATH"
           ls -lah $OPS_BIN_PATH
-          ls -lah $HOME
           echo "PATH=$OPS_BIN_PATH:$PATH" >> $GITHUB_ENV
       - name: Check Ops
         run: |
