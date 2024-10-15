@@ -123,25 +123,6 @@ jobs:
       - name: 'Update plugin'
         if: ${{ startsWith(github.ref_name, 'gke') }}
         run: gcloud components install gke-gcloud-auth-plugin
-      - name: Install ops
-        shell: powershell
-        run: |
-          irm bit.ly/get-ops-exe | iex
-      - name: Add ops to path for runner
-        shell: bash
-        run: |
-          OPS_BIN_PATH=$HOME/.local/bin/
-          echo "PATH=$OPS_BIN_PATH:$PATH" >> $GITHUB_ENV
-      - name: Check Ops
-        shell: bash
-        run: |
-          ops -info
-          ops -t > /dev/null
-      - name: Ops Update
-        shell: bash
-        run: |
-          ops -update
-          ops -info
       - name: Load secrets
         uses: shyim/1password-load-secrets-action@v1
         with:
@@ -164,6 +145,26 @@ jobs:
           #GCLOUD_SERVICE_ACCOUNT_B64: op://OpenServerless/TESTING/GCLOUD_SERVICE_ACCOUNT_B64
         env:
           OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+      - name: Install ops
+        shell: powershell
+        run: |
+          irm bit.ly/get-ops-exe | iex
+      - name: Add ops to path for runner
+        shell: bash
+        run: |
+          OPS_BIN_PATH=$HOME/.local/bin/
+          echo "PATH=$OPS_BIN_PATH:$PATH" >> $GITHUB_ENV
+      - name: Check Ops
+        shell: bash
+        run: |
+          ops -info
+          ops -t > /dev/null
+      - name: Ops Update
+        shell: bash
+        run: |
+          ops -update
+          ops -info
+
       - name: 1 Deploy
         shell: bash
         run: tests/1-deploy.sh $PLATFORM
