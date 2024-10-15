@@ -141,6 +141,8 @@ jobs:
         run: |
           OPS_BIN_PATH=$HOME/.ops/bin
           echo "OPS_BIN_PATH=$OPS_BIN_PATH"
+          echo "ls -lah $OPS_BIN_PATH"
+          echo "ls -lah $HOME"
           echo "PATH=$OPS_BIN_PATH:$PATH" >> $GITHUB_ENV
       - name: Check Ops
         run: |
