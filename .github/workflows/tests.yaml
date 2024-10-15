@@ -26,16 +26,6 @@ on:
 
 env:
   PLATFORM: ${{ github.ref_name }}
-  #K3S_IP: ${{ secrets.K3S_IP }}
-  #MK8S_IP: ${{ secrets.MK8S_IP }}
-  #ID_RSA_B64: ${{ secrets.ID_RSA_B64 }}
-  #AKS_KUBECONFIG_B64: ${{ secrets.AKS_KUBECONFIG_B64 }}
-  #EKS_KUBECONFIG_B64: ${{ secrets.EKS_KUBECONFIG_B64 }}
-  #GKE_KUBECONFIG_B64: ${{ secrets.GKE_KUBECONFIG_B64 }}
-  #OPENSHIFT_KUBECONFIG_B64: ${{ secrets.OPENSHIFT_KUBECONFIG_B64 }}
-  #AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }}
-  #AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  #GCLOUD_SERVICE_ACCOUNT_B64: ${{ secrets.GCLOUD_SERVICE_ACCOUNT_B64 }}
   USE_GKE_GCLOUD_AUTH_PLUGIN: "True"
   OPS_REPO: https://github.com/d4rkstar/openserverless-task
   OPS_BRANCH: main
@@ -140,8 +130,6 @@ jobs:
       - name: Add ops to path for runner
         run: |
           OPS_BIN_PATH=$HOME/.local/bin/
-          echo "OPS_BIN_PATH=$OPS_BIN_PATH"
-          ls -lah $OPS_BIN_PATH
           echo "PATH=$OPS_BIN_PATH:$PATH" >> $GITHUB_ENV
       - name: Check Ops
         run: |
@@ -152,6 +140,7 @@ jobs:
           ops -update
           ops -info
       - name: Load secrets
+        shell: powershell
         uses: shyim/1password-load-secrets-action@v1
         with:
           # export also as environment variable
