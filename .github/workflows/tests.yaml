@@ -141,7 +141,6 @@ jobs:
           ops -info
       - name: Load secrets
         uses: shyim/1password-load-secrets-action@v1
-        shell: powershell
         with:
           # export also as environment variable
           export: true
