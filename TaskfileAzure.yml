@@ -29,14 +29,12 @@ tasks:
     cmds:
       - >
         ops config azcloud 
-        --project=$AKS_PROJECT 
-        --region="{{.REGION}}" 
-        --vm="{{.VM_TYPE}}"
-        --disk="100"
-        --image="{{.IMAGE}}" 
-        --key={{.SSH_KEY}}
-    requires:
-      vars: [ VM_TYPE,REGION,IMAGE,SSH_KEY ]
+        --project=$AZCLOUD_PROJECT 
+        --region=$AZCLOUD_REGION 
+        --vm=$AZCLOUD_VM
+        --disk=$AZCLOUD_DISK
+        --image=$AZCLOUD_IMAGE 
+        --key=$SSH_KEY   
 
   vm:create:
     cmds:

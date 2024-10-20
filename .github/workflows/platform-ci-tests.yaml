@@ -21,20 +21,20 @@ run-name: Tagging openserverless-testing for platform ${{ github.event.client_pa
 
 on:
   repository_dispatch:
-    types: [olaris-testing-update]  
+    types: [ olaris-testing-update ]
 
 env:
   TAG: ${{ format('{0}-{1}', github.event.client_payload.platform, github.event.client_payload.tag) }}
-    
+
 jobs:
-      tags-push:
-        runs-on: ubuntu-22.04        
-        steps:
-          - name: Checkout
-            uses: actions/checkout@v3
-            with:
-              token: ${{ secrets.PAT }}
-          - name: Tag
-            run: git tag $TAG
-          - name: Push Tag
-            run: git push origin $TAG           
+  tags-push:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.PAT }}
+      - name: Tag
+        run: git tag $TAG
+      - name: Push Tag
+        run: git push origin $TAG

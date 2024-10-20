@@ -55,11 +55,9 @@ k3s)
         echo $K3S_IP>_ip
         ops config apihost api.k3s.opsv.xyz
     else
-        echo "Should fix when not K3S_IP"
-        # TODO: fix this
-        # task aws:vm:config
-        # ops cloud aws vm-create k3s-test
-        # ops cloud aws zone-update k3s.opsv.xyz --wildcard --vm=k3s-test
+        task azure:vm:config
+        ops cloud azcloud vm-create k3s-test
+        ops cloud azcloud zone-update k3s.opsv.xyz --wildcard --vm=k3s-test
         # ops cloud aws vm-getip k3s-test >_ip
     fi
     # install openserverless
@@ -75,10 +73,10 @@ mk8s)
           ops config apihost api.mk8s.opsv.xyz
           ops cloud mk8s kubeconfig "$MK8S_IP" ubuntu
     else
-        task aws:vm:config
-        ops cloud aws vm-create mk8s-test
-        ops cloud aws zone-update mk8s.opsv.xyz --wildcard --vm=mk8s-test
-        ops cloud aws vm-getip mk8s-test >_ip
+        task azure:vm:config
+        ops cloud azcloud vm-create mk8s-test
+        ops cloud azcloud zone-update mk8s.opsv.xyz --wildcard --vm=mk8s-test
+        ops cloud azcloud vm-getip mk8s-test >_ip
         ops cloud mk8s create "$(cat _ip)" ubuntu
         ops cloud mk8s kubeconfig "$(cat _ip)" ubuntu
     fi
@@ -99,9 +97,14 @@ eks)
         task aws:config
         task eks:config
         ops cloud eks create
-        ops cloud eks kubeconfig
+        POS=$(ops config use | grep "eks-eks-test" | sed 's/*//' | awk '{print $1}')
+        if [ "$POS" != "" ]; then
+          ops config use $POS
+        else
+          ops cloud eks kubeconfig
+        fi
         ops cloud eks lb >_cname
-        ops cloud aws zone-update eks.opsv.xyz --wildcard --cname=$(cat _cname)
+        ops cloud azcloud zone-update eks.opsv.xyz --wildcard --cname=$(cat _cname)
         # on eks we need to setup an initial apihost resolving the NLB hostname
         ops config apihost api.eks.opsv.xyz
     fi
@@ -120,12 +123,18 @@ aks)
         ops config use 0
         ops config apihost api.aks.opsv.xyz --protocol=http
     else
-        task aks:config
+        task azure:cluster:config
         ops cloud aks create
-        ops cloud aks kubeconfig
-        task aws:config
+
+        POS=$(ops config use | grep "aks-aks-test" | sed 's/*//' | awk '{print $1}')
+        if [ "$POS" != "" ]; then
+          ops config use $POS
+        else
+          ops cloud aks kubeconfig
+        fi
+
         IP=$(ops cloud aks lb)
-        ops cloud aws zone-update aks.opsv.xyz --wildcard --ip $IP
+        ops cloud azcloud zone-update aks.opsv.xyz --wildcard --ip $IP
     fi
     # install cluster
     ops debug defin
@@ -148,7 +157,12 @@ gke)
         task gcp:vm:config
         task aws:vm:config
         ops cloud gke create
-        ops cloud gke kubeconfig
+        POS=$(ops config use | grep "gke-gke-test" | sed 's/*//' | awk '{print $1}')
+        if [ "$POS" != "" ]; then
+          ops config use $POS
+        else
+          ops cloud gke kubeconfig
+        fi
         ops cloud aws zone-update gke.opsv.xyz --wildcard --ip $(ops cloud gke lb)
     fi
     # install cluster
