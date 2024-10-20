@@ -9,12 +9,13 @@ tasks:
     - >
       ops config aks
       --project=$AKS_PROJECT
-      --name=$AKS_CLUSTER_NAME
-      --count=4
-      --region=eastus
-      --vm=Standard_D3
-      --disk=100
-      --key=~/.ssh/id_rsa.pub
+      --name=$AKS_NAME
+      --count=$AKS_COUNT
+      --region=$AKS_REGION
+      --vm=$AKS_VM
+      --disk=$AKS_DISK
+      --key=$SSH_KEY
+      
 
   cluster:create:
     - task: cluster:config
@@ -31,7 +32,7 @@ tasks:
         --project=$AKS_PROJECT 
         --region="{{.REGION}}" 
         --vm="{{.VM_TYPE}}"
-        --disk="200"
+        --disk="100"
         --image="{{.IMAGE}}" 
         --key={{.SSH_KEY}}
     requires:
