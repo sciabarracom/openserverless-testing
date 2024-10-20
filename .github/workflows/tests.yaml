@@ -66,6 +66,10 @@ jobs:
           MK8S_IP: op://OpenServerless/TESTING/MK8S_IP
           ID_RSA_B64: op://OpenServerless/TESTING/ID_RSA_B64
           AKS_KUBECONFIG_B64: op://OpenServerless/TESTING/AKS_KUBECONFIG_B64
+          AWS_ACCESS_KEY_ID: op://OpenServerless/TESTING/AWS_ACCESS_KEY_ID
+          AWS_SECRET_ACCESS_KEY: op://OpenServerless/TESTING/AWS_SECRET_ACCESS_KEY
+          AWS_DEFAULT_REGION: op://OpenServerless/TESTING/AWS_DEFAULT_REGION
+          AWS_SSHKEY: op://OpenServerless/TESTING/AWS_SSHKEY
           EKS_KUBECONFIG_B64: op://OpenServerless/TESTING/EKS_KUBECONFIG_B64
           #GKE_KUBECONFIG_B64: op://OpenServerless/TESTING/GKE_KUBECONFIG_B64
           #OPENSHIFT_KUBECONFIG_B64: op://OpenServerless/TESTING/OPENSHIFT_KUBECONFIG_B64
@@ -137,6 +141,10 @@ jobs:
             op://OpenServerless/TESTING/MK8S_IP
             op://OpenServerless/TESTING/ID_RSA_B64
             op://OpenServerless/TESTING/AKS_KUBECONFIG_B64
+            op://OpenServerless/TESTING/AWS_ACCESS_KEY_ID
+            op://OpenServerless/TESTING/AWS_SECRET_ACCESS_KEY
+            op://OpenServerless/TESTING/AWS_DEFAULT_REGION
+            op://OpenServerless/TESTING/AWS_SSHKEY
             op://OpenServerless/TESTING/EKS_KUBECONFIG_B64
           #GKE_KUBECONFIG_B64: op://OpenServerless/TESTING/GKE_KUBECONFIG_B64
           #OPENSHIFT_KUBECONFIG_B64: op://OpenServerless/TESTING/OPENSHIFT_KUBECONFIG_B64
@@ -249,6 +257,10 @@ jobs:
           MK8S_IP: op://OpenServerless/TESTING/MK8S_IP
           ID_RSA_B64: op://OpenServerless/TESTING/ID_RSA_B64
           AKS_KUBECONFIG_B64: op://OpenServerless/TESTING/AKS_KUBECONFIG_B64
+          AWS_ACCESS_KEY_ID: op://OpenServerless/TESTING/AWS_ACCESS_KEY_ID
+          AWS_SECRET_ACCESS_KEY: op://OpenServerless/TESTING/AWS_SECRET_ACCESS_KEY
+          AWS_DEFAULT_REGION: op://OpenServerless/TESTING/AWS_DEFAULT_REGION
+          AWS_SSHKEY: op://OpenServerless/TESTING/AWS_SSHKEY
           EKS_KUBECONFIG_B64: op://OpenServerless/TESTING/EKS_KUBECONFIG_B64
           #GKE_KUBECONFIG_B64: op://OpenServerless/TESTING/GKE_KUBECONFIG_B64
           #OPENSHIFT_KUBECONFIG_B64: op://OpenServerless/TESTING/OPENSHIFT_KUBECONFIG_B64
