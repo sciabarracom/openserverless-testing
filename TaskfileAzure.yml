@@ -6,8 +6,9 @@ tasks:
     - az account show
 
   prereq:
-    - test -n "$AZCLOUD_PROJECT" || echo "Please set the AZCLOUD_PROJECT in .env" && exit 1
-    - test -n "$AKS_PROJECT" || echo "Please set the AKS_PROJECT in .env" && exit 1
+    - echo "PROJECT $AZCLOUD_PROJECT"
+    - test -n "$AZCLOUD_PROJECT" || (echo "Please set the AZCLOUD_PROJECT in .env"; exit 1)
+    - test -n "$AKS_PROJECT" || (echo "Please set the AKS_PROJECT in .env"; exit 1)
 
   cluster:config:
     - >
