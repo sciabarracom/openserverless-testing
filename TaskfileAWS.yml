@@ -14,7 +14,7 @@ tasks:
       --image=ami-024e6efaf93d85776
       --vm=t3a.large
       --vmuser=ubuntu
-      --disk=100 
+      --disk=50 
       --key="$AWS_DEFAULT_KEY_NAME"
 
   vm:create:

@@ -60,8 +60,25 @@ k3s)
         ops cloud azcloud zone-update k3s.opsv.xyz --wildcard --vm=k3s-test
         # ops cloud aws vm-getip k3s-test >_ip
     fi
-    # install openserverless
-    ops config apihost auto --protocol=http
+    # install cluster
+    ops setup server "$(cat _ip)" ubuntu --uninstall
+    ops setup server "$(cat _ip)" ubuntu
+    ;;
+k3s-arm)
+    # create vm and install in the server
+    ops config reset
+    # create vm without k3s
+    if test -n "$K3S_ARM_IP"
+    then
+        echo $K3S_ARM_IP>_ip
+        ops config apihost api.k3s-arm.opsv.xyz
+    else
+        task azure:vm:config
+        ops cloud azcloud vm-create k3s-arm-test
+        ops cloud azcloud zone-update k3s-arm.opsv.xyz --wildcard --vm=k3s-arm-test
+        ops cloud aws vm-getip k3s-test >_ip
+    fi
+    # install cluster
     ops setup server "$(cat _ip)" ubuntu --uninstall
     ops setup server "$(cat _ip)" ubuntu
     ;;
@@ -121,7 +138,7 @@ aks)
         mkdir -p ~/.kube
         echo $AKS_KUBECONFIG_B64 | base64 -d >~/.kube/config
         ops config use 0
-        ops config apihost api.aks.opsv.xyz --protocol=http
+        ops config apihost api.aks.opsv.xyz
     else
         task azure:cluster:config
         ops cloud aks create
