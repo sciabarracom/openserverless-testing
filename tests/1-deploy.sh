@@ -53,11 +53,11 @@ k3s)
     if test -n "$K3S_IP"
     then 
         echo $K3S_IP>_ip
-        ops config apihost api.k3s.opsv.xyz
+        ops config apihost api.k3s.opstest.top
     else
         task azure:vm:config
         ops cloud azcloud vm-create k3s-test
-        ops cloud azcloud zone-update k3s.opsv.xyz --wildcard --vm=k3s-test
+        ops cloud azcloud zone-update k3s.opstest.top --wildcard --vm=k3s-test
         # ops cloud aws vm-getip k3s-test >_ip
     fi
     # install cluster
@@ -71,11 +71,11 @@ k3s-arm)
     if test -n "$K3S_ARM_IP"
     then
         echo $K3S_ARM_IP>_ip
-        ops config apihost api.k3s-arm.opsv.xyz
+        ops config apihost api.k3s-arm.opstest.top
     else
         task azure:vm:config
         ops cloud azcloud vm-create k3s-arm-test
-        ops cloud azcloud zone-update k3s-arm.opsv.xyz --wildcard --vm=k3s-arm-test
+        ops cloud azcloud zone-update k3s-arm.opstest.top --wildcard --vm=k3s-arm-test
         ops cloud aws vm-getip k3s-test >_ip
     fi
     # install cluster
@@ -87,12 +87,12 @@ mk8s)
     # create vm with mk8s
     if test -n "$MK8S_IP"
     then 
-          ops config apihost api.mk8s.opsv.xyz
+          ops config apihost api.mk8s.opstest.top
           ops cloud mk8s kubeconfig "$MK8S_IP" ubuntu
     else
         task azure:vm:config
         ops cloud azcloud vm-create mk8s-test
-        ops cloud azcloud zone-update mk8s.opsv.xyz --wildcard --vm=mk8s-test
+        ops cloud azcloud zone-update mk8s.opstest.top --wildcard --vm=mk8s-test
         ops cloud azcloud vm-getip mk8s-test >_ip
         ops cloud mk8s create "$(cat _ip)" ubuntu
         ops cloud mk8s kubeconfig "$(cat _ip)" ubuntu
@@ -108,7 +108,7 @@ eks)
     then
         mkdir -p ~/.kube
         echo $EKS_KUBECONFIG_B64 | base64 -d >~/.kube/config
-        ops config apihost api.eks.opsv.xyz
+        ops config apihost api.eks.opstest.top
         ops config use 0
     else
         task aws:config
@@ -121,9 +121,9 @@ eks)
           ops cloud eks kubeconfig
         fi
         ops cloud eks lb >_cname
-        ops cloud azcloud zone-update eks.opsv.xyz --wildcard --cname=$(cat _cname)
+        ops cloud azcloud zone-update eks.opstest.top --wildcard --cname=$(cat _cname)
         # on eks we need to setup an initial apihost resolving the NLB hostname
-        ops config apihost api.eks.opsv.xyz
+        ops config apihost api.eks.opstest.top
     fi
     # install cluster
     ops debug defin
@@ -138,7 +138,7 @@ aks)
         mkdir -p ~/.kube
         echo $AKS_KUBECONFIG_B64 | base64 -d >~/.kube/config
         ops config use 0
-        ops config apihost api.aks.opsv.xyz
+        ops config apihost api.aks.opstest.top
     else
         task azure:cluster:config
         ops cloud aks create
@@ -151,7 +151,7 @@ aks)
         fi
 
         IP=$(ops cloud aks lb)
-        ops cloud azcloud zone-update aks.opsv.xyz --wildcard --ip $IP
+        ops cloud azcloud zone-update aks.opstest.top --wildcard --ip $IP
     fi
     # install cluster
     ops debug defin
@@ -169,7 +169,7 @@ gke)
         gcloud container clusters get-credentials nuvolaris-testing --project nuvolaris-testing --region=us-east1
         
         ops config use 0
-        ops config apihost api.gke.opsv.xyz
+        ops config apihost api.gke.opstest.top
     else
         task gcp:vm:config
         task aws:vm:config
@@ -180,7 +180,7 @@ gke)
         else
           ops cloud gke kubeconfig
         fi
-        ops cloud aws zone-update gke.opsv.xyz --wildcard --ip $(ops cloud gke lb)
+        ops cloud aws zone-update gke.opstest.top --wildcard --ip $(ops cloud gke lb)
     fi
     # install cluster
     ops debug defin
@@ -196,7 +196,7 @@ osh)
         mkdir -p ~/.kube
         echo $OPENSHIFT_KUBECONFIG_B64 | base64 -d >~/.kube/config
         ops config use 0
-        ops config apihost api.apps.nuvolaris-testing.oshgcp.opsv.xyz
+        ops config apihost api.apps.nuvolaris-testing.oshgcp.opstest.top
     else
         task osh:create
         ops cloud osh import conf/gcp/auth/kubeconfig
