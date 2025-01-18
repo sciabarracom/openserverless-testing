@@ -24,6 +24,7 @@ env:
 vars:
   # CLOUD: gcp
   CLOUD: azure
+  DOMAIN: opstest.top
 
 dotenv:
   - .env
@@ -77,7 +78,7 @@ tasks:
         VM_NAME: k3s-test
     - task: "{{.CLOUD}}:zone:update"
       vars:
-        HOST: k3s.opsv.xyz
+        HOST: k3s.{{.DOMAIN}}
         IP: $(cat _ip)
     - task: update_op
       vars:
@@ -103,7 +104,7 @@ tasks:
         VM_NAME: k3s-arm-test
     - task: "{{.CLOUD}}:zone:update"
       vars:
-        HOST: k3s-arm.opsv.xyz
+        HOST: k3s-arm.{{.DOMAIN}}
         IP: $(cat _ip)
     - task: update_op
       vars:
@@ -129,7 +130,7 @@ tasks:
           VM_NAME: mk8s-test
       - task: "{{.CLOUD}}:zone:update"
         vars:
-          HOST: mk8s.opsv.xyz
+          HOST: mk8s.{{.DOMAIN}}
           IP: $(cat _ip)
       - task: update_op
         vars:
@@ -164,7 +165,7 @@ tasks:
   #  cmds:
   #  - task aws:cluster:create
   #  - nuv cloud eks lb >_cname
-  #  - nuv cloud aws zone-update eks.opsv.xyz --wildcard --cname=$(cat _cname)
+  #  - nuv cloud aws zone-update eks.opstest.top --wildcard --cname=$(cat _cname)
   #
   ## TODO: to be verified
   #eks:delete:
@@ -176,7 +177,7 @@ tasks:
   #  cmds:
   #  - task azure:cluster:create
   #  - ops cloud aks lb >_ip
-  #  - ops cloud azcloud zone-update aks.opsv.xyz --wildcard --ip $(cat _ip)
+  #  - ops cloud azcloud zone-update aks.opstest.top --wildcard --ip $(cat _ip)
   #
   ## TODO: to be verified
   #aks:delete:
@@ -317,8 +318,8 @@ tasks:
     - |
       eval $(ssh-agent -s) 
       ssh-add conf/id_rsa
-      ops cloud k3s kubeconfig api.k3s.opsv.xyz ubuntu
-      ops cloud mk8s kubeconfig api.mk8s.opsv.xyz ubuntu
+      ops cloud k3s kubeconfig api.k3s.opstest.top ubuntu
+      ops cloud mk8s kubeconfig api.mk8s.opstest.top ubuntu
 
   # TODO: to be verified
   kubeconfig:
@@ -330,7 +331,7 @@ tasks:
     - echo "gke kubeconfig"
     - ops cloud gke kubeconfig
     - echo "openshift kubeconfig"
-    - KUBECONFIG=conf/osh.kubeconfig oc login https://api.nuvolaris-testing.oshgcp.opsv.xyz:6443 --insecure-skip-tls-verify=true  -u kubeadmin -p $OSH_KUBEADMIN_PASSWORD
+    - KUBECONFIG=conf/osh.kubeconfig oc login https://api.nuvolaris-testing.oshgcp.opstest.top:6443 --insecure-skip-tls-verify=true  -u kubeadmin -p $OSH_KUBEADMIN_PASSWORD
     - ops cloud osh import conf/osh.kubeconfig 
     - ops cloud aks kubeconfig
     - ops config use

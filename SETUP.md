@@ -28,7 +28,7 @@ Those notes are a remindinder of the steps executed to build our CI environment.
 
 We have a stable test environment on Azure/AWS/GCloud with:
 
-- in Azure, a domain (opsv.xyz) with subzones. All subzones are currently in Azure
+- in Azure, a domain (opstest.top) with subzones. All subzones are currently in Azure
 - in Azure, an AKS cluster
 - in AWS, an EKS cluster
 - in Gcloud, a GKE cluster
@@ -42,7 +42,7 @@ We have a stable test environment on Azure/AWS/GCloud with:
 
 You to install a few tools:
 
-- [`task`](taskfile.dev)
+- [`task`](https://taskfile.dev)
 - `aws` cli
 - `azure` cli 
 - `gcloud` cli 
@@ -85,16 +85,16 @@ stored in ~/.ssh/id_rsa and ~/.id_rsa.pub
 
 # DNS
 
-- Created the zone `oshgcp.opsv.xyz` in Gcloud
+- Created the zone `oshgcp.opstest.top` in Gcloud
 
 - Created the following zones in AWS Route53
-  - k3s.opsv.xyz
-  - mk8s.opsv.xyz
-  - eks.opsv.xyz
-  - aks.opsv.xyz 
-  - gke.opsv.xyz 
+  - k3s.opstest.top
+  - mk8s.opstest.top
+  - eks.opstest.top
+  - aks.opstest.top 
+  - gke.opstest.top 
 
-- Registered a domain in AWS (opsv.xyz) and delegated all the subzones.
+- Registered a domain in AWS (opstest.top) and delegated all the subzones.
 
 # OpenShift
 
@@ -105,7 +105,7 @@ First running the openshift-install and then manually tweaked the configuration.
 Note you need:
 - an id_rsa.pub
 - for gcloud, the service account file 
-- the dns zone ub GCP we created (oshgcp.opsv.xyz)
+- the dns zone ub GCP we created (oshgcp.opstest.top)
 - the pullSecret for OKD (open source openshift) as follows: 
 
 ```

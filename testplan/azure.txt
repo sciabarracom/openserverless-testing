@@ -11,18 +11,29 @@ ops cloud azcloud vm-list
 #! see the vm
 
 # Dns
-## k3s
-ops cloud azcloud zone-update opsv.xyz --host=mk8s --vm=mk8s-test
-ops cloud azcloud zone-update opsv.xyz --host="*.mk8s" --cname=mk8s.opsv.xyz
-
 ## mk8s
-ops cloud azcloud zone-update opsv.xyz --host="*.k3s" --cname=k3s.opsv.xyz
-ops cloud azcloud zone-update opsv.xyz --host=k3s --vm=k3s-test
+ops cloud azcloud zone-create mk8s.opstest.top
+ops cloud azcloud zone-update mk8s.opstest.top --host="*" --vm=mk8s-test
+
+## k3s
+ops cloud azcloud zone-create k3s.opstest.top
+ops cloud azcloud zone-update k3s.opstest.top --host="*" --vm=k3s-test
+
+## k3s-arm
+ops cloud azcloud zone-create k3s-arm.opstest.top
+ops cloud azcloud zone-update k3s-arm.opstest.top --host="*" --vm=k3s-arm-test
 
 ## aks
+# IMPORTANT: first retrieve the aks kubeconfig!
+# to do this you need access to azure openserverless-testing
+ops -config AKS_NAME=aks-test
+ops -config AKS_PROJECT=openserverless-testing
+ops config use <number> <- replace this with aks-aks-test config number
+
+ops cloud azcloud zone-create aks.opstest.top
 ops cloud aks lb <- retrieve the ip
-ops cloud azcloud zone-update opsv.xyz --host=aks --ip=<put the ip here>
-ops cloud azcloud zone-update opsv.xyz --host="*.aks" --cname=aks.opsv.xyz
+ops cloud azcloud zone-update aks.opstest.top --host="*" --ip=<put the ip here>
+
 
 # Install k3s
 ops config reset
