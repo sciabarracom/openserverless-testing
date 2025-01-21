@@ -1,6 +1,8 @@
 version: '3'
 
 tasks:
+  dotenv:
+    - .env
 
   check: 
     - az account show
@@ -25,12 +27,14 @@ tasks:
     - task: cluster:config
     - ops cloud aks create
 
+
   cluster:delete:
     - task: cluster:config
     - ops cloud aks delete
 
   vm:config:
     cmds:
+      - task: prereq
       - >
         ops config azcloud 
         --project={{.AZCLOUD_PROJECT}} 

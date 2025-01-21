@@ -298,11 +298,11 @@ tasks:
   # TODO: to be verified
   config:
     cmds:
-    - task aws:vm:config
-    - task aws:cluster:config
-    - task gcp:vm:config
-    - task gcp:cluster:config
-    - task azure:cluster:config  
+    #- task aws:vm:config
+    #- task aws:cluster:config
+    #- task gcp:vm:config
+    #- task gcp:cluster:config
+    - task azure:vm:config
 
   login:
     - az login --use-device-code
