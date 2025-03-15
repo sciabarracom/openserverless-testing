@@ -27,7 +27,7 @@ on:
 env:
   PLATFORM: ${{ github.ref_name }}
   USE_GKE_GCLOUD_AUTH_PLUGIN: "True"
-  OPS_REPO: https://github.com/d4rkstar/openserverless-task
+  OPS_REPO: https://github.com/apache/openserverless-task
   OPS_BRANCH: main
   NGROK_TOKEN: ${{ secrets.NGROK_TOKEN }}
   #NGROK_PASSWORD: ${{ secrets.NGROK_PASSWORD }}
