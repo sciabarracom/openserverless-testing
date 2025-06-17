@@ -1,3 +1,4 @@
 [submodule "tasks"]
 	path = tasks
-	url = https://github.com/apache/openserverless-task
+	url = https://github.com/d4rkstar/openserverless-task
+	branch = slim
